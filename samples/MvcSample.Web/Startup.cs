@@ -7,8 +7,8 @@ using MvcSample.Web.Filters;
 using MvcSample.Web.Services;
 
 #if NET45 
-using Autofac;
-using Microsoft.Framework.DependencyInjection.Autofac;
+using Ninject;
+using Microsoft.Framework.DependencyInjection.Ninject;
 using Microsoft.Framework.OptionsModel;
 #endif
 
@@ -29,8 +29,6 @@ namespace MvcSample.Web
             if (configuration.TryGet("DependencyInjection", out diSystem) && 
                 diSystem.Equals("AutoFac", StringComparison.OrdinalIgnoreCase))
             {
-                app.UseMiddleware<MonitoringMiddlware>();
-
                 var services = new ServiceCollection();
 
                 services.AddMvc();
@@ -39,20 +37,16 @@ namespace MvcSample.Web
                 services.AddTransient<ITestService, TestService>();                
                 services.Add(OptionsServices.GetDefaultServices());
 
-                // Create the autofac container 
-                ContainerBuilder builder = new ContainerBuilder();
+                // Create the Ninject container
+                var kernel = new StandardKernel();
 
                 // Create the container and use the default application services as a fallback 
-                AutofacRegistration.Populate(
-                    builder,
+                NinjectRegistration.Populate(
+                    kernel,
                     services,
                     fallbackServiceProvider: app.ApplicationServices);
 
-                builder.RegisterModule<MonitoringModule>();
-
-                IContainer container = builder.Build();
-
-                app.UseServices(container.Resolve<IServiceProvider>());
+                app.UseServices(kernel.Get<IServiceProvider>());
             }
             else
 #endif

@@ -22,9 +22,9 @@
     "net45": {
       "dependencies": {
         "System.ComponentModel.DataAnnotations": "",
-        "Microsoft.Framework.DependencyInjection.Autofac": "1.0.0-*",
+        "Microsoft.Framework.DependencyInjection.Ninject": "1.0.0-*",
         "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-*",
-        "Autofac": "3.3.0"
+        "Ninject": "3.0.1.10"
       }
     },
     "k10": {

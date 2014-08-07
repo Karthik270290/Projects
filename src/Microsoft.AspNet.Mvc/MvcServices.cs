@@ -93,6 +93,13 @@ namespace Microsoft.AspNet.Mvc
 
             yield return
                describe.Describe(
+                   typeof(INestedProviderManager<FilterProviderContext>),
+                   typeof(NestedProviderManager<FilterProviderContext>),
+                   implementationInstance: null,
+                   lifecycle: LifecycleKind.Transient);
+
+            yield return
+               describe.Describe(
                    typeof(INestedProviderManager<>),
                    typeof(NestedProviderManager<>),
                    implementationInstance: null,
