@@ -25,10 +25,8 @@ namespace Microsoft.AspNet.WebPages.Core
         public IOptionsAccessor<WebPagesOptions> OptionsAccessor { get; set; }
 
         [WebPagesDefaultActionConvention]
-        public IActionResult WebPagesView(/*string viewPath*/)
+        public IActionResult WebPagesView(string viewPath)
         {
-            string viewPath = (string)ActionContext.RouteData.Values["viewPath*"];
-
             viewPath = OptionsAccessor.Options.PagesFolderPath + viewPath + ".cshtml";
 
             var result = ViewEngine.FindView(ActionContext, viewPath);
@@ -53,7 +51,7 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public class RouteTemplate : IRouteTemplateProvider
         {
-            public readonly string _viewAttributeRouteFormatString = "{0}/{{viewPath*}}";
+            public readonly string _viewAttributeRouteFormatString = "{0}/{{*viewPath}}";
 
             private string _basePath;
 
