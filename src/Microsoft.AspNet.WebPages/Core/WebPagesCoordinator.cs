@@ -3,6 +3,8 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
@@ -19,9 +21,16 @@ namespace Microsoft.AspNet.WebPages.Core
         [Activate]
         public ActionContext ActionContext { get; set; }
 
+        [Activate]
+        public IOptionsAccessor<WebPagesOptions> OptionsAccessor { get; set; }
+
         [WebPagesDefaultActionConvention]
-        public IActionResult WebPagesView(string viewPath)
+        public IActionResult WebPagesView(/*string viewPath*/)
         {
+            string viewPath = (string)ActionContext.RouteData.Values["viewPath*"];
+
+            viewPath = OptionsAccessor.Options.PagesFolderPath + viewPath + ".cshtml";
+
             var result = ViewEngine.FindView(ActionContext, viewPath);
 
             if (result.Success)
@@ -44,7 +53,7 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public class RouteTemplate : IRouteTemplateProvider
         {
-            public readonly string _viewAttributeRouteFormatString = "{0}/{viewPath*}";
+            public readonly string _viewAttributeRouteFormatString = "{0}/{{viewPath*}}";
 
             private string _basePath;
 
