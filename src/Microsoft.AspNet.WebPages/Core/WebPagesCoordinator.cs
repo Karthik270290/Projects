@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using System;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
@@ -7,8 +10,6 @@ namespace Microsoft.AspNet.WebPages.Core
     // the WebPagesActionDescriptorProvider.
     public class WebPagesCoordinator
     {
-        public readonly string ViewAttributeRouteFormatString = "{0}/{viewPath*}";
-
         [Activate]
         public ViewDataDictionary ViewData { get; set; }
 
@@ -18,6 +19,7 @@ namespace Microsoft.AspNet.WebPages.Core
         [Activate]
         public ActionContext ActionContext { get; set; }
 
+        [WebPagesDefaultActionConvention]
         public IActionResult WebPagesView(string viewPath)
         {
             var result = ViewEngine.FindView(ActionContext, viewPath);
@@ -30,6 +32,32 @@ namespace Microsoft.AspNet.WebPages.Core
             {
                 return new HttpNotFoundResult();
             }
+        }
+
+        private class WebPagesDefaultActionConvention : Attribute, IActionModelConvention
+        {
+            public void Apply([NotNull]ActionModel model)
+            {
+                model.ApiExplorerIsVisible = false;
+            }
+        }
+
+        public class RouteTemplate : IRouteTemplateProvider
+        {
+            public readonly string _viewAttributeRouteFormatString = "{0}/{viewPath*}";
+
+            private string _basePath;
+
+            public RouteTemplate([NotNull] string basePath)
+            {
+                _basePath = basePath;
+            }
+
+            public string Name { get { return "__WebPages__"; } }
+
+            public int? Order { get { return null; } }
+
+            public string Template { get { return string.Format(_viewAttributeRouteFormatString, _basePath); } }
         }
     }
 }

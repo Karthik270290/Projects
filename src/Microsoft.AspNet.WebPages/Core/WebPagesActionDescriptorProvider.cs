@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Filters;
@@ -14,6 +16,7 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly IActionDiscoveryConventions _conventions;
         private readonly IReadOnlyList<IFilter> _globalFilters;
         private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
+        private readonly string _webPagesFolderName;
         private readonly string _routedPagesFolderName;
 
         public WebPagesActionDescriptorProvider(IControllerAssemblyProvider controllerAssemblyProvider,
@@ -26,6 +29,7 @@ namespace Microsoft.AspNet.WebPages.Core
             _conventions = conventions;
             _globalFilters = globalFilters.Filters;
             _modelConventions = mvcOptionsAccessor.Options.ApplicationModelConventions;
+            _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderName;
             _routedPagesFolderName = webPagesOptionsAccessor.Options.RoutedPagesFolderName;
         }
 
@@ -36,7 +40,33 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public void Invoke(ActionDescriptorProviderContext context, Action callNext)
         {
+            context.Results.AddRange(GetDescriptors());
+
             callNext();
+        }
+
+        public IEnumerable<ControllerActionDescriptor> GetDescriptors()
+        {
+            var model = BuildModel();
+
+            // apply conventions but no global conventions apply here.
+            model.ApplyConventions(Enumerable.Empty<IGlobalModelConvention>()); 
+
+            return ActionDescriptorBuilder.Build(model);
+        }
+
+        public GlobalModel BuildModel()
+        {
+            var applicationModel = new GlobalModel();
+            applicationModel.Filters.AddRange(_globalFilters);
+
+            applicationModel.AddControllerModel(typeof(WebPagesCoordinator).GetTypeInfo(), _conventions);
+
+            var action = applicationModel.Controllers.Single().Actions.Single();
+            action.AttributeRouteModel = new AttributeRouteModel(
+                new WebPagesCoordinator.RouteTemplate(_webPagesFolderName));
+
+            return applicationModel;
         }
     }
 }
