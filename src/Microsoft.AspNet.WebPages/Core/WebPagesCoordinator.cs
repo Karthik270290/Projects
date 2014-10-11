@@ -3,15 +3,17 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
     // This class acts as a controller, but is named differently so it only gets exposed through
     // the WebPagesActionDescriptorProvider.
+    [WebPagesDefaultActionConvention]
     public class WebPagesCoordinator
     {
+        private static readonly char[] PathSeparators = new [] { '/', '\\' };
+
         [Activate]
         public ViewDataDictionary ViewData { get; set; }
 
@@ -27,7 +29,10 @@ namespace Microsoft.AspNet.WebPages.Core
         [WebPagesDefaultActionConvention]
         public IActionResult WebPagesView(string viewPath)
         {
-            viewPath = OptionsAccessor.Options.PagesFolderPath + viewPath + ".cshtml";
+            viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators) 
+                + "/"
+                + viewPath 
+                + ".cshtml";
 
             var result = ViewEngine.FindView(ActionContext, viewPath);
 
@@ -53,18 +58,24 @@ namespace Microsoft.AspNet.WebPages.Core
         {
             public readonly string _viewAttributeRouteFormatString = "{0}/{{*viewPath}}";
 
-            private string _basePath;
+            private string _urlPrefix;
 
-            public RouteTemplate([NotNull] string basePath)
+            public RouteTemplate([NotNull] string urlPrefix)
             {
-                _basePath = basePath;
+                _urlPrefix = urlPrefix;
             }
 
             public string Name { get { return "__WebPages__"; } }
 
             public int? Order { get { return null; } }
 
-            public string Template { get { return string.Format(_viewAttributeRouteFormatString, _basePath); } }
+            public string Template
+            {
+                get
+                {
+                    return string.Format(_viewAttributeRouteFormatString, _urlPrefix.Trim(PathSeparators));
+                }
+            }
         }
     }
 }

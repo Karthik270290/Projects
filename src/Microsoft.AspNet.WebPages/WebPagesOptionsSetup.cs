@@ -23,8 +23,10 @@ namespace Microsoft.AspNet.WebPages
         /// <inheritdoc />
         public static void ConfigureWebPages(WebPagesOptions options)
         {
-            options.PagesFolderName = "Pages";
-            options.RoutedPagesFolderName = "RoutedPages";
+            options.PagesUrlPrefix = "Pages";
+            options.PagesFolderPath = "/Pages";
+
+            options.RoutedPagesFolderPath = "/RoutedPages";
         }
     }
 }

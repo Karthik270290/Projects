@@ -16,6 +16,7 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly IActionDiscoveryConventions _conventions;
         private readonly IReadOnlyList<IFilter> _globalFilters;
         private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
+        private readonly string _webPagesUrlPrefix;
         private readonly string _webPagesFolderName;
         private readonly string _routedPagesFolderName;
 
@@ -29,8 +30,9 @@ namespace Microsoft.AspNet.WebPages.Core
             _conventions = conventions;
             _globalFilters = globalFilters.Filters;
             _modelConventions = mvcOptionsAccessor.Options.ApplicationModelConventions;
-            _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderName;
-            _routedPagesFolderName = webPagesOptionsAccessor.Options.RoutedPagesFolderName;
+            _webPagesUrlPrefix = webPagesOptionsAccessor.Options.PagesUrlPrefix;
+            _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderPath;
+            _routedPagesFolderName = webPagesOptionsAccessor.Options.RoutedPagesFolderPath;
         }
 
         public int Order
@@ -64,7 +66,7 @@ namespace Microsoft.AspNet.WebPages.Core
 
             var action = applicationModel.Controllers.Single().Actions.Single();
             action.AttributeRouteModel = new AttributeRouteModel(
-                new WebPagesCoordinator.RouteTemplate(_webPagesFolderName));
+                new WebPagesCoordinator.RouteTemplate(_webPagesUrlPrefix));
 
             return applicationModel;
         }
