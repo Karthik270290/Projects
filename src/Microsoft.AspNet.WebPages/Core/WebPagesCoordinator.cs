@@ -4,6 +4,7 @@ using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
@@ -12,7 +13,7 @@ namespace Microsoft.AspNet.WebPages.Core
     [WebPagesDefaultActionConvention]
     public class WebPagesCoordinator
     {
-        private static readonly char[] PathSeparators = new [] { '/', '\\' };
+        private static readonly char[] PathSeparators = new[] { '/', '\\' };
 
         [Activate]
         public ViewDataDictionary ViewData { get; set; }
@@ -29,9 +30,9 @@ namespace Microsoft.AspNet.WebPages.Core
         [WebPagesDefaultActionConvention]
         public IActionResult WebPagesView(string viewPath)
         {
-            viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators) 
+            viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators)
                 + "/"
-                + viewPath 
+                + viewPath
                 + ".cshtml";
 
             var result = ViewEngine.FindView(ActionContext, viewPath);
@@ -46,8 +47,61 @@ namespace Microsoft.AspNet.WebPages.Core
             }
         }
 
-        private class WebPagesDefaultActionConvention : Attribute, IActionModelConvention
+        private class WebPagesActionConstraint : IActionConstraint
         {
+            private readonly string _constraintPath;
+
+            public WebPagesActionConstraint([NotNull] string constraintPath)
+            {
+                _constraintPath = constraintPath;
+            }
+
+            public int Order { get { return -10000; } }
+
+            public bool Accept([NotNull] ActionConstraintContext context)
+            {
+                var viewPath = _constraintPath
+                    + "/"
+                    + (string)context.RouteContext.RouteData.Values["viewPath"]
+                    + ".cshtml";
+
+                ActionContext actionContext = new ActionContext(context.RouteContext,
+                                                          context.CurrentCandidate.Action);
+
+                // need to resolve services here, as this object has a different lifetime than
+                // the request
+                var viewEngine = context.RouteContext.HttpContext.RequestServices.GetService<ICompositeViewEngine>();
+                var result = viewEngine.FindView(actionContext, viewPath);
+
+                if (result.Success)
+                {
+                    // need to measure if we should cache the view
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        private class WebPagesDefaultActionConvention : Attribute,
+                                                        IActionModelConvention,
+                                                        IActionConstraintFactory
+        {
+            private IActionConstraint _constraint;
+
+            public IActionConstraint CreateInstance(IServiceProvider serviceProvider)
+            {
+                if (_constraint == null)
+                {
+                    var options = serviceProvider.GetService<IOptionsAccessor<WebPagesOptions>>();
+                    var path = options.Options.PagesFolderPath.TrimEnd(PathSeparators);
+
+                    _constraint = new WebPagesActionConstraint(path.TrimEnd(PathSeparators));
+                }
+
+                return _constraint;
+            }
+
             public void Apply([NotNull]ActionModel model)
             {
                 model.ApiExplorerIsVisible = false;
@@ -56,7 +110,7 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public class RouteTemplate : IRouteTemplateProvider
         {
-            public readonly string _viewAttributeRouteFormatString = "{0}/{{*viewPath}}";
+            public readonly string _viewAttributeRouteFormatString = "{0}/{{*viewPath:minlength(1)}}";
 
             private string _urlPrefix;
 
