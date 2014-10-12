@@ -31,8 +31,10 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             Assert.NotSame(route, action2.AttributeRouteModel);
         }
 
-        [Fact]
-        public void CopyConstructor_CopiesAllProperties()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CopyConstructor_CopiesAllProperties(bool emptyDictionary)
         {
             // Arrange
             var action = new ActionModel(typeof(TestController).GetMethod("Edit"));
@@ -47,6 +49,11 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             action.HttpMethods.Add("GET");
             action.IsActionNameMatchRequired = true;
 
+            if (!emptyDictionary)
+            {
+                action.AdditionalDefaults = new Dictionary<string, object>();
+                action.AdditionalDefaults.Add("a", "b");
+            }
             // Act
             var action2 = new ActionModel(action);
 
@@ -76,6 +83,19 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
 
                     // Ensure non-default value
                     Assert.NotEqual(value1, Activator.CreateInstance(property.PropertyType));
+                }
+                else if (property.PropertyType == typeof(Dictionary<string, object>))
+                {
+                    if (emptyDictionary)
+                    {
+                        Assert.Null(value1);
+                        Assert.Null(value2);
+                    }
+                    else
+                    {
+                        Assert.Equal(((Dictionary<string,object>)value1).Count,
+                                     ((Dictionary<string,object>)value2).Count);
+                    }
                 }
                 else
                 {

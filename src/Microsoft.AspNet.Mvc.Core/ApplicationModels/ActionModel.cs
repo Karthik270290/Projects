@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -44,6 +45,12 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             {
                 AttributeRouteModel = new AttributeRouteModel(other.AttributeRouteModel);
             }
+
+            if (other.AdditionalDefaults != null)
+            {
+                AdditionalDefaults = new Dictionary<string, object>(other.AdditionalDefaults,
+                                                                    StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         public List<IActionConstraintMetadata> ActionConstraints { get; private set; }
@@ -65,6 +72,8 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
         public List<ParameterModel> Parameters { get; private set; }
 
         public AttributeRouteModel AttributeRouteModel { get; set; }
+
+        public Dictionary<string, object> AdditionalDefaults { get; set; }        
 
         /// <summary>
         /// If <c>true</c>, <see cref="Description.ApiDescription"/> objects will be created for this action. 

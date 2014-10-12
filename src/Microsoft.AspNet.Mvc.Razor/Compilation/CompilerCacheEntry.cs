@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             Length = info.Length;
             LastModified = info.LastModified;
             Hash = info.Hash;
-            // Precompiled views are always instrumented.
+            Route = info.Route;
             IsInstrumented = true;
         }
 
@@ -40,6 +40,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             Length = info.FileInfo.Length;
             LastModified = info.FileInfo.LastModified;
             IsInstrumented = isInstrumented;
+            Route = info.Route;
         }
 
         /// <summary>
@@ -76,5 +77,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// Gets a flag that indiciates if the page execution in <see cref="CompiledType"/> is instrumeted.
         /// </summary>
         public bool IsInstrumented { get; private set; }
+
+        public string Route { get; private set; }
     }
 }

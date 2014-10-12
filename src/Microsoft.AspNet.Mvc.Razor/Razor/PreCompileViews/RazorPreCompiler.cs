@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Microsoft.AspNet.FileSystems;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -115,6 +116,9 @@ namespace Microsoft.AspNet.Mvc.Razor
                                                   [NotNull] IBeforeCompileContext context,
                                                   [NotNull] CSharpParseOptions options)
         {
+            // hack - add routing support to the view
+            string route = GetRoute(fileInfo.FileInfo);
+
             using (var stream = fileInfo.FileInfo.CreateReadStream())
             {
                 var results = _host.GenerateCode(fileInfo.RelativePath, stream);
@@ -145,9 +149,46 @@ namespace Microsoft.AspNet.Mvc.Razor
                             LastModified = fileInfo.FileInfo.LastModified,
                             Length = fileInfo.FileInfo.Length,
                             Hash = hash,
+                            Route = route,
                         };
                     }
                 }
+            }
+
+            return null;
+        }
+
+        private string GetRoute(IFileInfo fileInfo)
+        {
+            using (var stream = fileInfo.CreateReadStream())
+            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+            {
+                for (int i = 0; i < 10 && !streamReader.EndOfStream; i++)
+                {
+                    var route = GetRoute(streamReader.ReadLine());
+                    if (!string.IsNullOrEmpty(route))
+                    {
+                        return GetRoute(route);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private string GetRoute(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return null;
+            }
+
+            int index = input.IndexOf("@route ", StringComparison.Ordinal);
+
+            if (index >= 0)
+            {
+                string route = input.Substring(7).Trim(new[] { ' ', '\t', '*', '@' });
+                return route;
             }
 
             return null;

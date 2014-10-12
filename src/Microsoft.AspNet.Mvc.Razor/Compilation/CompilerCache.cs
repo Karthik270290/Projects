@@ -117,6 +117,14 @@ namespace Microsoft.AspNet.Mvc.Razor
             }
         }
 
+        public IEnumerable<KeyValuePair<string, CompilerCacheEntry>> Values
+        {
+            get
+            {
+                return _cache.AsEnumerable();
+            }
+        }
+
         private CompilationResult OnCacheMiss(RelativeFileInfo file,
                                               bool isInstrumented,
                                               Func<CompilationResult> compile)

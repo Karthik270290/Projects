@@ -31,5 +31,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// A hash of the file content.
         /// </summary>
         public string Hash { get; set; }
+
+        public string Route { get; set; }
     }
 }

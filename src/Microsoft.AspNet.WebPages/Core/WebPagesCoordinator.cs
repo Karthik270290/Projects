@@ -28,11 +28,11 @@ namespace Microsoft.AspNet.WebPages.Core
         public IOptionsAccessor<WebPagesOptions> OptionsAccessor { get; set; }
 
         [WebPagesDefaultActionConvention]
-        public IActionResult WebPagesView(string viewPath)
+        public IActionResult WebPagesView(string __viewPath)
         {
-            viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators)
+            var viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators)
                 + "/"
-                + viewPath
+                + __viewPath
                 + ".cshtml";
 
             var result = ViewEngine.FindView(ActionContext, viewPath);
@@ -60,9 +60,16 @@ namespace Microsoft.AspNet.WebPages.Core
 
             public bool Accept([NotNull] ActionConstraintContext context)
             {
+                var routeValues = context.RouteContext.RouteData.Values;
+
+                if (routeValues["__route"] != null)
+                {
+                    return true;
+                }
+
                 var viewPath = _constraintPath
                     + "/"
-                    + (string)context.RouteContext.RouteData.Values["viewPath"]
+                    + (string)routeValues["__viewPath"]
                     + ".cshtml";
 
                 ActionContext actionContext = new ActionContext(context.RouteContext,
@@ -108,13 +115,13 @@ namespace Microsoft.AspNet.WebPages.Core
             }
         }
 
-        public class RouteTemplate : IRouteTemplateProvider
+        public class CatchAllRouteTemplate : IRouteTemplateProvider
         {
-            public readonly string _viewAttributeRouteFormatString = "{0}/{{*viewPath:minlength(1)}}";
+            public readonly string _viewAttributeRouteFormatString = "{0}/{{*__viewPath:minlength(1)}}";
 
             private string _urlPrefix;
 
-            public RouteTemplate([NotNull] string urlPrefix)
+            public CatchAllRouteTemplate([NotNull] string urlPrefix)
             {
                 _urlPrefix = urlPrefix;
             }
@@ -130,6 +137,20 @@ namespace Microsoft.AspNet.WebPages.Core
                     return string.Format(_viewAttributeRouteFormatString, _urlPrefix.Trim(PathSeparators));
                 }
             }
+        }
+
+        public class RouteTemplate : IRouteTemplateProvider
+        {
+            public RouteTemplate([NotNull] string route)
+            {
+                Template = route;
+            }
+
+            public string Name { get { return Guid.NewGuid().ToString(); } }
+
+            public int? Order { get { return null; } }
+
+            public string Template { get; private set; }
         }
     }
 }

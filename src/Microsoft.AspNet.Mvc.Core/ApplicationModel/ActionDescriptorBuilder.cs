@@ -254,8 +254,16 @@ namespace Microsoft.AspNet.Mvc.ApplicationModel
                 MethodInfo = action.ActionMethod,
                 Parameters = parameterDescriptors,
                 RouteConstraints = new List<RouteDataActionConstraint>(),
-                AttributeRouteInfo = attributeRouteInfo
+                AttributeRouteInfo = attributeRouteInfo,
             };
+
+            if (action.AdditionalDefaults != null)
+            {
+                foreach (var kvp in action.AdditionalDefaults)
+                {
+                    actionDescriptor.RouteValueDefaults.Add(kvp.Key, kvp.Value);
+                }
+            }
 
             actionDescriptor.DisplayName = string.Format(
                 "{0}.{1}",
