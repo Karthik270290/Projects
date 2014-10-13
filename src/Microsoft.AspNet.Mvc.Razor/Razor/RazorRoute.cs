@@ -1,55 +1,30 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.IO;
-using System.Text;
-using Microsoft.AspNet.FileSystems;
-using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNet.Razor;
 
 namespace Microsoft.AspNet.Mvc.Razor
 {
     public static class RazorRoute
     {
-        public static string GetRoute(TypeInfo razorPage)
+        public static IEnumerable<string> GetRoutes([NotNull] GeneratorResults generatorResults)
         {
-            throw new NotImplementedException();
-        }
-        
-        public static string GetRoute(IFileInfo fileInfo)
-        {
-            using (var stream = fileInfo.CreateReadStream())
-            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-            {
-                for (int i = 0; i < 10 && !streamReader.EndOfStream; i++)
-                {
-                    var route = GetRoute(streamReader.ReadLine());
-                    if (!string.IsNullOrEmpty(route))
-                    {
-                        return route;
-                    }
-                }
-            }
+            var chunks = generatorResults.CodeTree.Chunks
+                            .OfType<RouteChunk>();
 
-            return null;
+            // TODO: Expose verbs
+            return chunks.Select(chunk => chunk.RouteTemplate);
         }
 
-        private static string GetRoute(string input)
+        public static IEnumerable<string> GetRoutes([NotNull] IMvcRazorHost host, [NotNull] RelativeFileInfo fileInfo)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            using (var stream = fileInfo.FileInfo.CreateReadStream())
             {
-                return null;
+                var results = host.GenerateCode(fileInfo.RelativePath, stream);
+                return GetRoutes(results);
             }
-
-            int index = input.IndexOf("@route ", StringComparison.Ordinal);
-
-            if (index >= 0)
-            {
-                string route = input.Substring(7).Trim(new[] { ' ', '\t', '*', '@' });
-                return route;
-            }
-
-            return null;
         }
     }
 }

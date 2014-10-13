@@ -95,13 +95,15 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Consume any other whitespace tokens.
             AcceptWhile(IsSpacingToken(includeNewLines: false, includeComments: true));
 
+            AcceptAndMoveNext();
+
             // route now contains the token "/foo/{bar}"
             var route = Span.GetContent().Value;
 
             var propertyStartLocation = CurrentLocation;
             AcceptWhile(IsSpacingToken(includeNewLines: false, includeComments: true));
 
-            // Read until end of line. Span now contains 'MyApp.MyService MyServiceName'.
+            // Read until end of line. And discard whatever is there.
             AcceptUntil(CSharpSymbolType.NewLine);
 
             Span.CodeGenerator = new RouteCodeGenerator(route, null);

@@ -3,8 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
 using Microsoft.AspNet.FileSystems;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -83,12 +82,13 @@ namespace Microsoft.AspNet.Mvc.Razor
                                                   [NotNull] IBeforeCompileContext context,
                                                   [NotNull] CSharpParseOptions options)
         {
-            // hack - add routing support to the view
-            string route = RazorRoute.GetRoute(fileInfo.FileInfo);
-
             using (var stream = fileInfo.FileInfo.CreateReadStream())
             {
                 var results = _host.GenerateCode(fileInfo.RelativePath, stream);
+
+                string route = RazorRoute.GetRoutes(results).FirstOrDefault();
+
+                var document = results.Document;
 
                 foreach (var parserError in results.ParserErrors)
                 {

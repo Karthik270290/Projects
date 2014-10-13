@@ -23,6 +23,7 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
         private readonly ICompilerCache _compilerCache;
         private readonly IApplicationEnvironment _appEnv;
+        private readonly IMvcRazorHost _mvcRazorHost;
         private readonly string _webPagesUrlPrefix;
         private readonly string _webPagesFolderName;
         private readonly string _routedPagesFolderName;
@@ -33,8 +34,11 @@ namespace Microsoft.AspNet.WebPages.Core
                                                 IOptionsAccessor<MvcOptions> mvcOptionsAccessor,
                                                 IOptionsAccessor<WebPagesOptions> webPagesOptionsAccessor,
                                                 IApplicationEnvironment appEnv,
+                                                IMvcRazorHost mvcRazorHost,
                                                 ICompilerCache compilerCache)
         {
+            System.Diagnostics.Debug.Fail("");
+
             _conventions = conventions;
             _globalFilters = globalFilters.Filters;
             _modelConventions = mvcOptionsAccessor.Options.ApplicationModelConventions;
@@ -42,6 +46,7 @@ namespace Microsoft.AspNet.WebPages.Core
             _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderPath;
             _updatePrecompilation = webPagesOptionsAccessor.Options.UpdateRoutesFromPrecompilationAtStartup;
             _appEnv = appEnv;
+            _mvcRazorHost = mvcRazorHost;
             _compilerCache = compilerCache;
 
             var path = webPagesOptionsAccessor.Options.RoutedPagesFolderPath;
@@ -106,7 +111,8 @@ namespace Microsoft.AspNet.WebPages.Core
 
             foreach (var relativeFileInfo in directory.GetFileInfos(_routedPagesFolderName))
             {
-                var route = RazorRoute.GetRoute(relativeFileInfo.FileInfo);
+                var route = RazorRoute.GetRoutes(_mvcRazorHost, relativeFileInfo)
+                                      .FirstOrDefault();
 
                 if (route != null)
                 {
