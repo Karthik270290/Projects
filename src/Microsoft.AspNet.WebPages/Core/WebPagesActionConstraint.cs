@@ -40,8 +40,7 @@ namespace Microsoft.AspNet.WebPages.Core
 
             var viewPath = _constraintPath
                 + "/"
-                + (string)routeValues[Coordinator.ViewPathRouteKey]
-                + ".cshtml"; // TODO: We should be able to remove the extension from here.
+                + (string)routeValues[Coordinator.ViewPathRouteKey];
 
             ActionContext actionContext = new ActionContext(context.RouteContext,
                                                       context.CurrentCandidate.Action);

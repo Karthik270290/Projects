@@ -9,6 +9,5 @@ namespace Microsoft.AspNet.Mvc.Razor
     {
         public IFileInfo FileInfo { get; set; }
         public string RelativePath { get; set; }
-        public string Route { get; set; }
     }
 }

@@ -62,7 +62,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             var options = SyntaxTreeGenerator.GetParseOptions(context.CSharpCompilation);
             var list = new List<RazorFileInfo>();
 
-            foreach (var info in GetFileInfosRecursive(string.Empty))
+            var directory = new RazorDirectory(_fileSystem, FileExtension);
+
+            foreach (var info in directory.GetFileInfos(string.Empty))
             {
                 var descriptor = ParseView(info,
                                            context,
@@ -77,47 +79,12 @@ namespace Microsoft.AspNet.Mvc.Razor
             return list;
         }
 
-        private IEnumerable<RelativeFileInfo> GetFileInfosRecursive(string currentPath)
-        {
-            IEnumerable<IFileInfo> fileInfos;
-            string path = currentPath;
-
-            if (!_fileSystem.TryGetDirectoryContents(path, out fileInfos))
-            {
-                yield break;
-            }
-
-            foreach (var fileInfo in fileInfos)
-            {
-                if (fileInfo.IsDirectory)
-                {
-                    var subPath = Path.Combine(path, fileInfo.Name);
-
-                    foreach (var info in GetFileInfosRecursive(subPath))
-                    {
-                        yield return info;
-                    }
-                }
-                else if (Path.GetExtension(fileInfo.Name)
-                         .Equals(FileExtension, StringComparison.OrdinalIgnoreCase))
-                {
-                    var info = new RelativeFileInfo()
-                    {
-                        FileInfo = fileInfo,
-                        RelativePath = Path.Combine(currentPath, fileInfo.Name),
-                    };
-
-                    yield return info;
-                }
-            }
-        }
-
         protected virtual RazorFileInfo ParseView([NotNull] RelativeFileInfo fileInfo,
                                                   [NotNull] IBeforeCompileContext context,
                                                   [NotNull] CSharpParseOptions options)
         {
             // hack - add routing support to the view
-            string route = GetRoute(fileInfo.FileInfo);
+            string route = RazorRoute.GetRoute(fileInfo.FileInfo);
 
             using (var stream = fileInfo.FileInfo.CreateReadStream())
             {
@@ -158,41 +125,6 @@ namespace Microsoft.AspNet.Mvc.Razor
             return null;
         }
 
-        private string GetRoute(IFileInfo fileInfo)
-        {
-            using (var stream = fileInfo.CreateReadStream())
-            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-            {
-                for (int i = 0; i < 10 && !streamReader.EndOfStream; i++)
-                {
-                    var route = GetRoute(streamReader.ReadLine());
-                    if (!string.IsNullOrEmpty(route))
-                     {
-                        return route;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private string GetRoute(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return null;
-            }
-
-            int index = input.IndexOf("@route ", StringComparison.Ordinal);
-
-            if (index >= 0)
-            {
-                string route = input.Substring(7).Trim(new[] { ' ', '\t', '*', '@' });
-                return route;
-            }
-
-            return null;
-        }
     }
 }
 

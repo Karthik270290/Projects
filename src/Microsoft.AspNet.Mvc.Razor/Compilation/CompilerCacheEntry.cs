@@ -40,7 +40,6 @@ namespace Microsoft.AspNet.Mvc.Razor
             Length = info.FileInfo.Length;
             LastModified = info.FileInfo.LastModified;
             IsInstrumented = isInstrumented;
-            Route = info.Route;
         }
 
         /// <summary>

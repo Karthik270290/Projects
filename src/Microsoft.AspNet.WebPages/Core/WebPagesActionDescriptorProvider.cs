@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNet.FileSystems;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.OptionsModel;
+using Microsoft.Framework.Runtime;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
@@ -20,6 +22,7 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly IReadOnlyList<IFilter> _globalFilters;
         private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
         private readonly ICompilerCache _compilerCache;
+        private readonly IApplicationEnvironment _appEnv;
         private readonly string _webPagesUrlPrefix;
         private readonly string _webPagesFolderName;
         private readonly string _routedPagesFolderName;
@@ -29,6 +32,7 @@ namespace Microsoft.AspNet.WebPages.Core
                                                 IGlobalFilterProvider globalFilters,
                                                 IOptionsAccessor<MvcOptions> mvcOptionsAccessor,
                                                 IOptionsAccessor<WebPagesOptions> webPagesOptionsAccessor,
+                                                IApplicationEnvironment appEnv,
                                                 ICompilerCache compilerCache)
         {
             _conventions = conventions;
@@ -37,6 +41,7 @@ namespace Microsoft.AspNet.WebPages.Core
             _webPagesUrlPrefix = webPagesOptionsAccessor.Options.PagesUrlPrefix;
             _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderPath;
             _updatePrecompilation = webPagesOptionsAccessor.Options.UpdateRoutesFromPrecompilationAtStartup;
+            _appEnv = appEnv;
             _compilerCache = compilerCache;
 
             var path = webPagesOptionsAccessor.Options.RoutedPagesFolderPath;
@@ -88,9 +93,41 @@ namespace Microsoft.AspNet.WebPages.Core
                 System.Diagnostics.Debugger.Break();
             }
 
+            if (_updatePrecompilation) // TODO: move to a background thread at startup
+            {
+                ScanForRoutedPages(applicationModel);
+            }
+            else
+            {
+                GetValuesFromPrecompilation(applicationModel);
+            }
+
+            return applicationModel;
+        }
+
+        private void ScanForRoutedPages(GlobalModel applicationModel)
+        {
+            BaseRoutedModel model = null;
+            var directory = new RazorDirectory(new PhysicalFileSystem(_appEnv.ApplicationBasePath),
+                                               ".cshtml");
+
+            foreach (var relativeFileInfo in directory.GetFileInfos(_routedPagesFolderName))
+            {
+                var route = RazorRoute.GetRoute(relativeFileInfo.FileInfo);
+
+                if (route != null)
+                {
+                    model = model ?? CreateBaseRoutedModel(applicationModel);
+
+                    AddRoutedAction(model, route, relativeFileInfo.RelativePath);
+                }
+            }
+        }
+
+        private void GetValuesFromPrecompilation(GlobalModel applicationModel)
+        {
             BaseRoutedModel model = null;
 
-            // Add routed views.
             foreach (var value in _compilerCache.Values)
             {
                 if (!string.IsNullOrEmpty(value.Value.Route))
@@ -100,8 +137,6 @@ namespace Microsoft.AspNet.WebPages.Core
                     AddRoutedAction(model, value);
                 }
             }
-
-            return applicationModel;
         }
 
         private BaseRoutedModel CreateBaseRoutedModel(GlobalModel applicationModel)
@@ -126,7 +161,13 @@ namespace Microsoft.AspNet.WebPages.Core
         private void AddRoutedAction(BaseRoutedModel model,
                                      KeyValuePair<string, CompilerCacheEntry> entry)
         {
-            var relativePath = entry.Key ?? string.Empty;
+            AddRoutedAction(model, entry.Value.Route, entry.Key ?? string.Empty);
+        }
+
+        private void AddRoutedAction(BaseRoutedModel model,
+                                    string route,
+                                    string relativePath)
+        {
             if (!string.IsNullOrEmpty(_routedPagesFolderName) &&
                 !relativePath.StartsWith(_routedPagesFolderName))
             {
@@ -135,14 +176,14 @@ namespace Microsoft.AspNet.WebPages.Core
 
             var routedAction = new ActionModel(model.Action);
             routedAction.AttributeRouteModel = new AttributeRouteModel(
-                new RouteTemplate(entry.Value.Route));
+                new RouteTemplate(route));
 
             routedAction.AdditionalDefaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-            string viewPath = "/" + entry.Key.Replace('\\', '/').TrimStart('/');
+            string viewPath = "/" + relativePath.Replace('\\', '/').TrimStart('/');
             routedAction.AdditionalDefaults.Add(Coordinator.ViewPathRouteKey, viewPath);
             routedAction.AdditionalDefaults.Add(WebPagesActionConstraint.WebPagesDefaultRouteKey,
-                                                entry.Value.Route);
+                                                route);
 
             model.Controller.Actions.Add(routedAction);
         }
