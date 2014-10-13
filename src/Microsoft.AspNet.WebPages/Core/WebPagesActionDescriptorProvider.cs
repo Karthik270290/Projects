@@ -86,14 +86,7 @@ namespace Microsoft.AspNet.WebPages.Core
             action.AttributeRouteModel = new AttributeRouteModel(
                 new CatchAllRouteTemplate(_webPagesUrlPrefix));
 
-            if (!string.IsNullOrEmpty(
-                System.Environment.GetEnvironmentVariable("DebugBreak")))
-            {
-                System.Diagnostics.Debugger.Launch();
-                System.Diagnostics.Debugger.Break();
-            }
-
-            if (_updatePrecompilation) // TODO: move to a background thread at startup
+            if (_updatePrecompilation || !_compilerCache.Values.Any()) // TODO: move to a background thread at startup
             {
                 ScanForRoutedPages(applicationModel);
             }
