@@ -41,6 +41,10 @@ namespace Microsoft.AspNet.Mvc.Razor
 
         protected override CSharpCodeWritingScope BuildClassDeclaration(CSharpCodeWriter writer)
         {
+            // For now not generating any code, just capturing the chunks
+            var routeVisitor = new RouteChunkVisitor(writer, Context);
+            routeVisitor.Accept(Context.CodeTreeBuilder.CodeTree.Chunks);
+
             // Grab the last model chunk so it gets intellisense.
             var modelChunk = ChunkHelper.GetModelChunk(Context.CodeTreeBuilder.CodeTree);
 

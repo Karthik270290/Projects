@@ -24,6 +24,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             "Microsoft.AspNet.Mvc",
             "Microsoft.AspNet.Mvc.Rendering",
         };
+
         private static readonly Chunk[] _defaultInheritedChunks = new[]
         {
             new InjectChunk("Microsoft.AspNet.Mvc.Rendering.IHtmlHelper<TModel>", "Html"),

@@ -12,8 +12,10 @@ namespace Microsoft.AspNet.Mvc.Razor
 {
     public class MvcRazorCodeParser : CSharpCodeParser
     {
-        private const string ModelKeyword = "model";
         private const string InjectKeyword = "inject";
+        private const string ModelKeyword = "model";
+        private const string RouteKeyword = "route";
+
         private readonly string _baseType;
         private SourceLocation? _endInheritsLocation;
         private bool _modelStatementFound;
@@ -23,6 +25,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             _baseType = baseType;
             MapDirectives(ModelDirective, ModelKeyword);
             MapDirectives(InjectDirective, InjectKeyword);
+            MapDirectives(RouteDirective, RouteKeyword);
         }
 
         protected override void InheritsDirective()
@@ -65,6 +68,47 @@ namespace Microsoft.AspNet.Mvc.Razor
             _modelStatementFound = true;
 
             CheckForInheritsAndModelStatements();
+        }
+
+        protected virtual void RouteDirective()
+        {
+            // @route "/foo/{bar}" OR @route /foo/{bar}
+            AssertDirective(RouteKeyword);
+            AcceptAndMoveNext();
+
+            Context.CurrentBlock.Type = BlockType.Directive;
+
+            // Accept whitespace
+            var remainingWs = AcceptSingleWhiteSpaceCharacter();
+            if (Span.Symbols.Count > 1)
+            {
+                Span.EditHandler.AcceptedCharacters = AcceptedCharacters.None;
+            }
+
+            Output(SpanKind.MetaCode);
+
+            if (remainingWs != null)
+            {
+                Accept(remainingWs);
+            }
+
+            // Consume any other whitespace tokens.
+            AcceptWhile(IsSpacingToken(includeNewLines: false, includeComments: true));
+
+            // route now contains the token "/foo/{bar}"
+            var route = Span.GetContent().Value;
+
+            var propertyStartLocation = CurrentLocation;
+            AcceptWhile(IsSpacingToken(includeNewLines: false, includeComments: true));
+
+            // Read until end of line. Span now contains 'MyApp.MyService MyServiceName'.
+            AcceptUntil(CSharpSymbolType.NewLine);
+
+            Span.CodeGenerator = new RouteCodeGenerator(route, null);
+
+            // Output the span and finish the block
+            CompleteBlock();
+            Output(SpanKind.MetaCode);
         }
 
         protected virtual void InjectDirective()
