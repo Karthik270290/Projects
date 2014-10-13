@@ -23,6 +23,7 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly string _webPagesUrlPrefix;
         private readonly string _webPagesFolderName;
         private readonly string _routedPagesFolderName;
+        private readonly bool _updatePrecompilation;
 
         public WebPagesActionDescriptorProvider(IActionDiscoveryConventions conventions,
                                                 IGlobalFilterProvider globalFilters,
@@ -35,6 +36,7 @@ namespace Microsoft.AspNet.WebPages.Core
             _modelConventions = mvcOptionsAccessor.Options.ApplicationModelConventions;
             _webPagesUrlPrefix = webPagesOptionsAccessor.Options.PagesUrlPrefix;
             _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderPath;
+            _updatePrecompilation = webPagesOptionsAccessor.Options.UpdateRoutesFromPrecompilationAtStartup;
             _compilerCache = compilerCache;
 
             var path = webPagesOptionsAccessor.Options.RoutedPagesFolderPath;
@@ -86,36 +88,42 @@ namespace Microsoft.AspNet.WebPages.Core
                 System.Diagnostics.Debugger.Break();
             }
 
-            ControllerModel routedController = null;
-            ActionModel baseAction = null;
+            BaseRoutedModel model = null;
 
             // Add routed views.
             foreach (var value in _compilerCache.Values)
             {
                 if (!string.IsNullOrEmpty(value.Value.Route))
                 {
-                    if (baseAction == null)
-                    {
-                        var typeInfo = typeof(RoutedPageCoordinator).GetTypeInfo();
-                        applicationModel.AddControllerModel(typeInfo, _conventions);
+                    model = model ?? CreateBaseRoutedModel(applicationModel);
 
-                        routedController = applicationModel
-                                                    .Controllers
-                                                    .Single(c => c.ControllerType == typeInfo);
-
-                        baseAction = routedController.Actions.Single();
-                        routedController.Actions.Clear();
-                    }
-
-                    AddRoutedAction(routedController, baseAction, value);
+                    AddRoutedAction(model, value);
                 }
             }
 
             return applicationModel;
         }
 
-        private void AddRoutedAction(ControllerModel controller,
-                                     ActionModel baseAction,
+        private BaseRoutedModel CreateBaseRoutedModel(GlobalModel applicationModel)
+        {
+            var typeInfo = typeof(RoutedPageCoordinator).GetTypeInfo();
+            applicationModel.AddControllerModel(typeInfo, _conventions);
+
+            var routedController = applicationModel
+                                        .Controllers
+                                        .Single(c => c.ControllerType == typeInfo);
+
+            var baseAction = routedController.Actions.Single();
+            routedController.Actions.Clear();
+
+            return new BaseRoutedModel()
+            {
+                Controller = routedController,
+                Action = baseAction,
+            };
+        }
+
+        private void AddRoutedAction(BaseRoutedModel model,
                                      KeyValuePair<string, CompilerCacheEntry> entry)
         {
             var relativePath = entry.Key ?? string.Empty;
@@ -125,7 +133,7 @@ namespace Microsoft.AspNet.WebPages.Core
                 throw new InvalidOperationException("Route views have to be under the routed pages path.");
             }
 
-            var routedAction = new ActionModel(baseAction);
+            var routedAction = new ActionModel(model.Action);
             routedAction.AttributeRouteModel = new AttributeRouteModel(
                 new RouteTemplate(entry.Value.Route));
 
@@ -136,7 +144,13 @@ namespace Microsoft.AspNet.WebPages.Core
             routedAction.AdditionalDefaults.Add(WebPagesActionConstraint.WebPagesDefaultRouteKey,
                                                 entry.Value.Route);
 
-            controller.Actions.Add(routedAction);
+            model.Controller.Actions.Add(routedAction);
+        }
+
+        private class BaseRoutedModel
+        {
+            public ControllerModel Controller { get; set; }
+            public ActionModel Action { get; set; }
         }
     }
 }

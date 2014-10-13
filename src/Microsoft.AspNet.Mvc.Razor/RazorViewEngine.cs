@@ -94,7 +94,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     viewName = viewName + ViewExtension;
                 }
 
-                var page = _pageFactory.CreateInstance(viewName, IsInstrumentationEnabled(context));
+                var page = _pageFactory.CreateInstance(viewName);
                 if (page != null)
                 {
                     return CreateFoundResult(context, page, viewName, partial);

@@ -26,7 +26,7 @@ Add the @route directive like the following
 ### What's to do to finish the prototype
 
 ##### Higher Pri
-- Auto compute web pages at startup 
+~~- Auto compute web pages at startup ~~ 10/12
 -- Scan + Add just in precompilation, do it on a background thread. And block.
 - Make route a real attribute and a real directive
 - Add a file watcher to scan for changes in the routed pages folder, and update the action descriptors collection when it happens

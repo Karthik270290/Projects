@@ -10,5 +10,7 @@ namespace Microsoft.AspNet.WebPages
         public string PagesFolderPath { get; set; }
 
         public string RoutedPagesFolderPath { get; set; }
+
+        public bool UpdateRoutesFromPrecompilationAtStartup { get; set; } = true;
     }
 }
