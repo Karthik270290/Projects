@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.AspNet.Mvc.Razor.Host;
 using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Parser;
@@ -97,20 +98,26 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             AcceptAndMoveNext();
 
+            // Read until end of line or first comment. Then discard whatever is there.
+            AcceptWhile(IsNotSpacingToken(includeNewLines: true, includeComments: true));
+
             // route now contains the token "/foo/{bar}"
             var route = Span.GetContent().Value;
 
             var propertyStartLocation = CurrentLocation;
-            AcceptWhile(IsSpacingToken(includeNewLines: false, includeComments: true));
-
-            // Read until end of line. And discard whatever is there.
-            AcceptUntil(CSharpSymbolType.NewLine);
 
             Span.CodeGenerator = new RouteCodeGenerator(route, null);
 
             // Output the span and finish the block
             CompleteBlock();
             Output(SpanKind.MetaCode);
+        }
+
+        private Func<CSharpSymbol, bool> IsNotSpacingToken(bool includeNewLines, bool includeComments)
+        {
+            return sym => sym.Type == CSharpSymbolType.WhiteSpace ||
+                          (includeNewLines && sym.Type == CSharpSymbolType.NewLine) ||
+                          (includeComments && sym.Type == CSharpSymbolType.Comment);
         }
 
         protected virtual void InjectDirective()

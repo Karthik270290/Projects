@@ -4,3 +4,4 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Microsoft.AspNet.Mvc.Razor.Host.Test")]
+[assembly: InternalsVisibleTo("Microsoft.AspNet.WebPages.Test")]
