@@ -31,25 +31,23 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public WebPagesActionDescriptorProvider(IActionDiscoveryConventions conventions,
                                                 IGlobalFilterProvider globalFilters,
-                                                IOptionsAccessor<MvcOptions> mvcOptionsAccessor,
-                                                IOptionsAccessor<WebPagesOptions> webPagesOptionsAccessor,
+                                                IOptions<MvcOptions> mvcOptions,
+                                                IOptions<WebPagesOptions> webPagesOptions,
                                                 IApplicationEnvironment appEnv,
                                                 IMvcRazorHost mvcRazorHost,
                                                 ICompilerCache compilerCache)
         {
-            System.Diagnostics.Debug.Fail("");
-
             _conventions = conventions;
             _globalFilters = globalFilters.Filters;
-            _modelConventions = mvcOptionsAccessor.Options.ApplicationModelConventions;
-            _webPagesUrlPrefix = webPagesOptionsAccessor.Options.PagesUrlPrefix;
-            _webPagesFolderName = webPagesOptionsAccessor.Options.PagesFolderPath;
-            _updatePrecompilation = webPagesOptionsAccessor.Options.UpdateRoutesFromPrecompilationAtStartup;
+            _modelConventions = mvcOptions.Options.ApplicationModelConventions;
+            _webPagesUrlPrefix = webPagesOptions.Options.PagesUrlPrefix;
+            _webPagesFolderName = webPagesOptions.Options.PagesFolderPath;
+            _updatePrecompilation = webPagesOptions.Options.UpdateRoutesFromPrecompilationAtStartup;
             _appEnv = appEnv;
             _mvcRazorHost = mvcRazorHost;
             _compilerCache = compilerCache;
 
-            var path = webPagesOptionsAccessor.Options.RoutedPagesFolderPath;
+            var path = webPagesOptions.Options.RoutedPagesFolderPath;
 
             path = path.Replace('/', '\\').TrimStart(new[] { '\\' }) + "\\";
             _routedPagesFolderName = path;

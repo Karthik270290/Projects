@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.WebPages.Core
         {
             if (_constraint == null)
             {
-                var options = serviceProvider.GetService<IOptionsAccessor<WebPagesOptions>>();
+                var options = serviceProvider.GetService<IOptions<WebPagesOptions>>();
                 var path = options.Options.PagesFolderPath.TrimEnd(Coordinator.PathSeparators);
 
                 var viewEngine = serviceProvider.GetService<ICompositeViewEngine>();

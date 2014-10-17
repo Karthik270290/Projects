@@ -9,7 +9,7 @@ namespace Microsoft.AspNet.WebPages
     /// <summary>
     /// Sets up default options for <see cref="WebPagesOptions"/>.
     /// </summary>
-    public class WebPagesOptionsSetup : OptionsAction<WebPagesOptions>
+    public class WebPagesOptionsSetup : ConfigureOptions<WebPagesOptions>
     {
         /// <remarks>
         /// Sets the Order to DefaultOrder to allow WebPagesOptionsSetup to run 

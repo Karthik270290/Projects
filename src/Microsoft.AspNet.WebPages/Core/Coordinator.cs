@@ -24,6 +24,6 @@ namespace Microsoft.AspNet.WebPages.Core
         public ActionContext ActionContext { get; set; }
 
         [Activate]
-        public IOptionsAccessor<WebPagesOptions> OptionsAccessor { get; set; }
+        public IOptions<WebPagesOptions> Options { get; set; }
     }
 }

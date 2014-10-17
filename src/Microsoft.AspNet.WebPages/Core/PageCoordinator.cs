@@ -10,7 +10,7 @@ namespace Microsoft.AspNet.WebPages.Core
         [WebPagesDefaultActionConvention]
         public IActionResult WebPagesView(string __viewPath)
         {
-            var viewPath = OptionsAccessor.Options.PagesFolderPath.TrimEnd(PathSeparators)
+            var viewPath = Options.Options.PagesFolderPath.TrimEnd(PathSeparators)
                 + "/"
                 + __viewPath;
 

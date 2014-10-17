@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.WebPages
         {
             var describe = new ServiceDescriber(configuration);
 
-            yield return describe.Transient<IOptionsAction<WebPagesOptions>, WebPagesOptionsSetup>();
+            yield return describe.Transient<IConfigureOptions<WebPagesOptions>, WebPagesOptionsSetup>();
 
             yield return describe.Transient<INestedProvider<ActionDescriptorProviderContext>,
                                             WebPagesActionDescriptorProvider>();
