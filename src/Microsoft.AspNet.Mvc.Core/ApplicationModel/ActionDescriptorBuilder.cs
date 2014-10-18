@@ -277,8 +277,10 @@ namespace Microsoft.AspNet.Mvc.ApplicationModel
         {
             var parameterDescriptor = new ParameterDescriptor()
             {
+                BinderMarker = parameter.BinderMarker,
+                IsOptional = parameter.IsOptional,
                 Name = parameter.ParameterName,
-                IsOptional = parameter.IsOptional
+                ParameterType = parameter.ParameterInfo.ParameterType,
             };
 
             var isFromBody = parameter.Attributes.OfType<FromBodyAttribute>().Any();
