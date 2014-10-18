@@ -98,11 +98,15 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             AcceptAndMoveNext();
 
-            // Read until end of line or first comment. Then discard whatever is there.
-            AcceptWhile(IsNotSpacingToken(includeNewLines: false, includeComments: true));
+            AcceptUntil(CSharpSymbolType.NewLine);
+            if (!Context.DesignTimeMode)
+            {
+                // We want the newline to be treated as code, but it causes issues at design-time.
+                Optional(CSharpSymbolType.NewLine);
+            }
 
             // route now contains the token "/foo/{bar}"
-            var route = Span.GetContent().Value;
+            var route = Span.GetContent().Value.Trim();
 
             var propertyStartLocation = CurrentLocation;
 
@@ -111,13 +115,6 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Output the span and finish the block
             CompleteBlock();
             Output(SpanKind.MetaCode);
-        }
-
-        private Func<CSharpSymbol, bool> IsNotSpacingToken(bool includeNewLines, bool includeComments)
-        {
-            return sym => sym.Type == CSharpSymbolType.WhiteSpace ||
-                          (includeNewLines && sym.Type == CSharpSymbolType.NewLine) ||
-                          (includeComments && sym.Type == CSharpSymbolType.Comment);
         }
 
         protected virtual void InjectDirective()
