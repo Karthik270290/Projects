@@ -19,10 +19,17 @@ namespace Microsoft.AspNet.WebPages
             {
                 var data = new[]
                 {
-                    new object [] { "WithRoute.cshtml", new[] { "myroute" } },
-                    new object [] { "WithThreeRoutes.cshtml", new[] { "myroute1", "myroute2", "myroute3" } },
-                    new object [] { "WithRouteToken.cshtml", new[] { "myroute/{foo}" } },
-                    new object [] { "WithCatchAll.cshtml", new[] { "myroute/*foo" } },
+                    new object [] { "WithRoute.cshtml", new[] { "myroute" }, null },
+                    new object [] { "WithThreeRoutes.cshtml",
+                         new[] { "myroute1", "myroute2", "myroute3" }, null },
+                    new object [] { "WithRouteToken.cshtml", new[] { "myroute/{foo}" }, null },
+                    new object [] { "WithCatchAll.cshtml", new[] { "myroute/{*foo}" }, null },
+                    new object [] { "WithGetPutPostDeletePatch.cshtml",
+                        new[] { "getroute", "putroute", "postroute", "deleteroute", "patchroute" },
+                        new[] { "get", "put", "post","delete", "patch"} },
+                    new object [] { "WithGet.cshtml", 
+                        new [] { "route", "route/{foo}", "route/{*catchall}" },
+                        new [] { "get", "get", "get"}, },
                 };
 
                 return data;
@@ -31,7 +38,7 @@ namespace Microsoft.AspNet.WebPages
 
         [Theory]
         [MemberData(nameof(RouteTestData))]
-        public void RazorRouteFindsRoutesInFiles(string fileName, params string[] routes)
+        public void RazorRouteFindsRoutesInFiles(string fileName, string[] routes, string[] verbs)
         {
             // Arrange
             var fileSystem = GetFileSystem();
@@ -46,16 +53,35 @@ namespace Microsoft.AspNet.WebPages
                 RelativePath = path,
             };
 
+            var routesCopy = (string[])routes.Clone();
+            Array.Sort(routesCopy);
+
             // Act
-            var foundRoutes = RazorRoute.GetRoutes(GetHost(), relativeFileInfo).ToArray();
+            var routesDictionary = RazorRoutes.GetRoutes(GetHost(), relativeFileInfo)
+                                              .ToDictionary(r => r.RouteTemplate);
+
+            var foundRoutes = routesDictionary.Keys
+                                              .ToArray(); 
 
             // Assert
             Assert.Equal(routes.Length, foundRoutes.Length);
 
             Array.Sort(foundRoutes);
-            Array.Sort(routes);
 
-            Assert.Equal(routes, foundRoutes);
+            Assert.Equal(routesCopy, foundRoutes);
+
+            if (verbs != null)
+            {
+                Assert.Equal(routes.Length, verbs.Length);
+
+                for (int i=0; i< verbs.Length; i++)
+                {
+                    var routeKey = routes[i];
+                    var route = routesDictionary[routeKey];
+
+                    Assert.Equal(verbs[i], route.Verb);
+                }
+            }
         }
 
         private static IFileSystem GetFileSystem()
