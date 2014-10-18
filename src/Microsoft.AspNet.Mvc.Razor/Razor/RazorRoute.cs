@@ -7,24 +7,19 @@ using Microsoft.AspNet.Razor;
 
 namespace Microsoft.AspNet.Mvc.Razor
 {
-    public static class RazorRoute
+    public class RazorRoute
     {
-        public static IEnumerable<string> GetRoutes([NotNull] GeneratorResults generatorResults)
-        {
-            var chunks = generatorResults.CodeTree.Chunks
-                            .OfType<RouteChunk>();
+        public string RouteTemplate { get; private set; }
+        public string Verb { get; private set; }
 
-            // TODO: Expose verbs
-            return chunks.Select(chunk => chunk.RouteTemplate);
+        public RazorRoute([NotNull] string routeTemplate, [NotNull] string verb)
+        {
+            RouteTemplate = routeTemplate;
+            Verb = verb;
         }
 
-        public static IEnumerable<string> GetRoutes([NotNull] IMvcRazorHost host, [NotNull] RelativeFileInfo fileInfo)
+        public RazorRoute([NotNull]RouteChunk chunk) : this(chunk.RouteTemplate, chunk.Verb)
         {
-            using (var stream = fileInfo.FileInfo.CreateReadStream())
-            {
-                var results = host.GenerateCode(fileInfo.RelativePath, stream);
-                return GetRoutes(results);
-            }
         }
     }
 }

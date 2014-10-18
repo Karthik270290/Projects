@@ -22,7 +22,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             Length = info.Length;
             LastModified = info.LastModified;
             Hash = info.Hash;
-            Route = info.Route;
+            Routes = info.Routes;
             IsInstrumented = true;
         }
 
@@ -77,6 +77,6 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// </summary>
         public bool IsInstrumented { get; private set; }
 
-        public string Route { get; private set; }
+        public RazorRoute[] Routes { get; private set; }
     }
 }

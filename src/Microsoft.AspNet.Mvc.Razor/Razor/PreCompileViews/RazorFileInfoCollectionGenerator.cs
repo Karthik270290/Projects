@@ -29,7 +29,7 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             foreach (var fileInfo in FileInfos)
             {
-                var perFileEntry = GenerateFile(fileInfo);
+                var perFileEntry = GenerateFileEntry(fileInfo);
                 builder.Append(perFileEntry);
             }
 
@@ -45,15 +45,17 @@ namespace Microsoft.AspNet.Mvc.Razor
         }
 
 
-        protected virtual string GenerateFile([NotNull] RazorFileInfo fileInfo)
+        protected virtual string GenerateFileEntry([NotNull] RazorFileInfo fileInfo)
         {
+            var routeEntry = GenerateRouteCollection(fileInfo.Routes);
+
             return string.Format(FileFormat,
                                  fileInfo.LastModified.ToFileTimeUtc(),
                                  fileInfo.Length,
                                  fileInfo.RelativePath,
                                  fileInfo.FullTypeName,
                                  fileInfo.Hash,
-                                 fileInfo.Route)
+                                 routeEntry)
                                  + "\r\n";
         }
 
@@ -92,6 +94,12 @@ namespace __ASP_ASSEMBLY
             }
         }
 
+        protected virtual string GenerateRouteCollection(IEnumerable<RazorRoute> routes)
+        {
+            // TODO: Hook up the routes here.
+            return "null";
+        }
+
         protected virtual string FileFormat
         {
             get
@@ -107,7 +115,7 @@ namespace __ASP_ASSEMBLY
                 " + nameof(RazorFileInfo.RelativePath) + @" = @""{2}"",
                 " + nameof(RazorFileInfo.FullTypeName) + @" = @""{3}"",
                 " + nameof(RazorFileInfo.Hash) + @" = @""{4}"",
-                " + nameof(RazorFileInfo.Route) + @" = @""{5}"",
+                " + nameof(RazorFileInfo.Routes) + @" = {5},
             }};
             fileInfos.Add(info);
 ";

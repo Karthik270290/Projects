@@ -109,10 +109,9 @@ namespace Microsoft.AspNet.WebPages.Core
 
             foreach (var relativeFileInfo in directory.GetFileInfos(_routedPagesFolderName))
             {
-                var route = RazorRoute.GetRoutes(_mvcRazorHost, relativeFileInfo)
-                                      .FirstOrDefault();
+                var routes = RazorRoutes.GetRoutes(_mvcRazorHost, relativeFileInfo);
 
-                if (route != null)
+                foreach (var route in routes)
                 {
                     model = model ?? CreateBaseRoutedModel(applicationModel);
 
@@ -125,13 +124,17 @@ namespace Microsoft.AspNet.WebPages.Core
         {
             BaseRoutedModel model = null;
 
-            foreach (var value in _compilerCache.Values)
+            foreach (var entryPair in _compilerCache.Values)
             {
-                if (!string.IsNullOrEmpty(value.Value.Route))
+                var routes = entryPair.Value.Routes;
+                if (routes != null)
                 {
-                    model = model ?? CreateBaseRoutedModel(applicationModel);
+                    foreach (var route in routes)
+                    {
+                        model = model ?? CreateBaseRoutedModel(applicationModel);
 
-                    AddRoutedAction(model, value);
+                        AddRoutedAction(model, route, entryPair.Key);
+                    }
                 }
             }
         }
@@ -156,13 +159,7 @@ namespace Microsoft.AspNet.WebPages.Core
         }
 
         private void AddRoutedAction(BaseRoutedModel model,
-                                     KeyValuePair<string, CompilerCacheEntry> entry)
-        {
-            AddRoutedAction(model, entry.Value.Route, entry.Key ?? string.Empty);
-        }
-
-        private void AddRoutedAction(BaseRoutedModel model,
-                                    string route,
+                                    RazorRoute route,
                                     string relativePath)
         {
             if (!string.IsNullOrEmpty(_routedPagesFolderName) &&
@@ -173,7 +170,12 @@ namespace Microsoft.AspNet.WebPages.Core
 
             var routedAction = new ActionModel(model.Action);
             routedAction.AttributeRouteModel = new AttributeRouteModel(
-                new RouteTemplate(route));
+                new RouteTemplate(route.RouteTemplate));
+
+            if (!string.IsNullOrEmpty(route.Verb))
+            {
+                routedAction.HttpMethods.Add(route.Verb);
+            }
 
             routedAction.AdditionalDefaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
@@ -192,3 +194,4 @@ namespace Microsoft.AspNet.WebPages.Core
         }
     }
 }
+

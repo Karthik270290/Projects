@@ -16,6 +16,11 @@ namespace Microsoft.AspNet.Mvc.Razor
         private const string InjectKeyword = "inject";
         private const string ModelKeyword = "model";
         private const string RouteKeyword = "route";
+        private const string HttpGetKeyword = "httpget";
+        private const string HttpPutKeyword = "httpput";
+        private const string HttpPostKeyword = "httppost";
+        private const string HttpDeleteKeyword = "httpdelete";
+        private const string HttpPatchKeyword = "httppatch";
 
         private readonly string _baseType;
         private SourceLocation? _endInheritsLocation;
@@ -27,6 +32,11 @@ namespace Microsoft.AspNet.Mvc.Razor
             MapDirectives(ModelDirective, ModelKeyword);
             MapDirectives(InjectDirective, InjectKeyword);
             MapDirectives(RouteDirective, RouteKeyword);
+            MapDirectives(HttpGetDirective, HttpGetKeyword);
+            MapDirectives(HttpPutDirective, HttpPutKeyword);
+            MapDirectives(HttpPostDirective, HttpPostKeyword);
+            MapDirectives(HttpDeleteDirective, HttpDeleteKeyword);
+            MapDirectives(HttpPatchDirective, HttpPatchKeyword);
         }
 
         protected override void InheritsDirective()
@@ -73,8 +83,43 @@ namespace Microsoft.AspNet.Mvc.Razor
 
         protected virtual void RouteDirective()
         {
-            // @route "/foo/{bar}" OR @route /foo/{bar}
             AssertDirective(RouteKeyword);
+            RouteDirectiveHandler(verb: null);
+        }
+
+        protected virtual void HttpGetDirective()
+        {
+            AssertDirective(HttpGetKeyword);
+            RouteDirectiveHandler(verb: "get");
+        }
+
+        protected virtual void HttpPutDirective()
+        {
+            AssertDirective(HttpPutKeyword);
+            RouteDirectiveHandler(verb: "put");
+        }
+
+        protected virtual void HttpPostDirective()
+        {
+            AssertDirective(HttpPostKeyword);
+            RouteDirectiveHandler(verb: "post");
+        }
+
+        protected virtual void HttpDeleteDirective()
+        {
+            AssertDirective(HttpDeleteKeyword);
+            RouteDirectiveHandler(verb: "delete");
+        }
+
+        protected virtual void HttpPatchDirective()
+        {
+            AssertDirective(HttpPatchKeyword);
+            RouteDirectiveHandler(verb: "patch");
+        }
+
+        protected virtual void RouteDirectiveHandler(string verb)
+        {
+            // @route "/foo/{bar}" OR @route /foo/{bar}
             AcceptAndMoveNext();
 
             Context.CurrentBlock.Type = BlockType.Directive;
@@ -110,7 +155,7 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             var propertyStartLocation = CurrentLocation;
 
-            Span.CodeGenerator = new RouteCodeGenerator(route, null);
+            Span.CodeGenerator = new RouteCodeGenerator(route, verb: verb);
 
             // Output the span and finish the block
             CompleteBlock();

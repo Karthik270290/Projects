@@ -7,6 +7,8 @@ namespace Microsoft.AspNet.Mvc.Razor
 {
     public class RazorFileInfo
     {
+        // TODO: Change this to the actual type, and see if we can get rid of this type completely
+        // by using typeof when generating the type.
         /// <summary>
         /// Type name including namespace.
         /// </summary>
@@ -32,6 +34,6 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// </summary>
         public string Hash { get; set; }
 
-        public string Route { get; set; }
+        public RazorRoute[] Routes { get; set; }
     }
 }

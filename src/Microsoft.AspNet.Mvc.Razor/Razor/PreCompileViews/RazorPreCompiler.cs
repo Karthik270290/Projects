@@ -86,7 +86,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             {
                 var results = _host.GenerateCode(fileInfo.RelativePath, stream);
 
-                string route = RazorRoute.GetRoutes(results).FirstOrDefault();
+                var routes = RazorRoutes.GetRoutes(results).ToArray();
 
                 var document = results.Document;
 
@@ -116,7 +116,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                             LastModified = fileInfo.FileInfo.LastModified,
                             Length = fileInfo.FileInfo.Length,
                             Hash = hash,
-                            Route = route,
+                            Routes = routes,
                         };
                     }
                 }
