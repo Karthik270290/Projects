@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Mvc.Description;
+using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.Routing;
 
 namespace Microsoft.AspNet.Mvc.ApplicationModel
@@ -135,7 +136,7 @@ namespace Microsoft.AspNet.Mvc.ApplicationModel
             var attributes = parameterInfo.GetCustomAttributes(inherit: true).OfType<object>().ToList();
             parameterModel.Attributes.AddRange(attributes);
 
-            parameterModel.BinderMarker = attributes.OfType<IBinderMarker>().FirstOrDefault();
+            parameterModel.BinderMetadata = attributes.OfType<IBinderMetadata>().FirstOrDefault();
             
             parameterModel.ParameterName = parameterInfo.Name;
             parameterModel.IsOptional = parameterInfo.HasDefaultValue;
