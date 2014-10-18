@@ -2,20 +2,36 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNet.FileSystems;
+using Microsoft.AspNet.Mvc.Razor;
 using Xunit;
 
-namespace Microsoft.AspNet.Mvc.Razor
+namespace Microsoft.AspNet.WebPages
 {
     public class RazorRouteTest
     {
+        public static IEnumerable<object[]> RouteTestData
+        {
+            get
+            {
+                var data = new[]
+                {
+                    new object [] { "WithRoute.cshtml", new[] { "myroute" } },
+                    new object [] { "WithThreeRoutes.cshtml", new[] { "myroute1", "myroute2", "myroute3" } },
+                    new object [] { "WithRouteToken.cshtml", new[] { "myroute/{foo}" } },
+                    new object [] { "WithCatchAll.cshtml", new[] { "myroute/*foo" } },
+                };
+
+                return data;
+            }
+        }
+
         [Theory]
-        [InlineData("WithCatchAll.cshtml", "myroute/*foo")]
-        [InlineData("WithRoute.cshtml", "myroute")]
-        [InlineData("WithRouteToken.cshtml", "myroute/{foo}")]
-        public void RazorRouteFindsRoutesInFiles(string fileName, string[] routes)
+        [MemberData(nameof(RouteTestData))]
+        public void RazorRouteFindsRoutesInFiles(string fileName, params string[] routes)
         {
             // Arrange
             var fileSystem = GetFileSystem();
