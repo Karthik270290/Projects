@@ -99,7 +99,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             AcceptAndMoveNext();
 
             // Read until end of line or first comment. Then discard whatever is there.
-            AcceptWhile(IsNotSpacingToken(includeNewLines: true, includeComments: true));
+            AcceptWhile(IsNotSpacingToken(includeNewLines: false, includeComments: true));
 
             // route now contains the token "/foo/{bar}"
             var route = Span.GetContent().Value;
