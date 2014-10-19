@@ -18,17 +18,36 @@ Add pages to the folders you specified, by default normal pages serve from anywh
 Add the @route directive like the following
 @route /foo/{bar}
 
-### What's to do to finish the prototype
+similarly httpget, httppost, httpdelete, httpput and httppatch create routes constrained to the matching verb.
+
+### What's to do to finish the prototype -  10/18/2014
 
 ##### Higher Pri
- 10/12 ~~Auto compute web pages routes at startup~~ 
--- Scan on a background thread right at startup, and block the first request.
-- Make route a real attribute ~~and a real directive~~
-- Add a file watcher to scan for changes in the routed pages folder, and update the action descriptors collection when it happens
-- Support HttpGet, HttpPost, etc.
-- Pickup route from chunks
+ 
+- Parameter binding - @bind directive? Q: Should bind be a general feature and not related to web pages?
+- Filters - @attribute directive -> @attribute [Authorize] and the authorize is placed on the controller? Should attributes be a general feature? We can for now support attributes with something simple like :
+
+@functions {
+	[PlaceYourAttributeHere]
+	__WellKnownMethodName() { }
+}
+
+Or with one small step :
+@attributes {
+	[PlaceYourAttributesHere]
+	// codegen __WellKnownMethodName() { }
+}
+
+- Code blocks around httpget
+
+@httpget /foo/bar
+{
+	// code that executes only for this route
+}
 
 ##### Lower Pri
-- ~~pick up route from runtime compilation~~
 - Throw on route at runtime, when route is not inside the right path.
 - Support multiple folders, mapped to multiple url patterns.
+- Support predicate or rejection pattern, so webpages can work with MVC but still serve pages from root (so no collission in the views folder).
+- Add a file watcher to scan for changes in the routed pages folder, and update the action descriptors collection when it happens.
+-- [perf] Scan on a background thread right at startup, and block the first request.
