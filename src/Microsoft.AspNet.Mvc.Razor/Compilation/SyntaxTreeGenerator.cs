@@ -10,7 +10,7 @@ namespace Microsoft.AspNet.Mvc.Razor
 {
     public static class SyntaxTreeGenerator
     {
-        private static CSharpParseOptions DefaultOptions
+        internal static CSharpParseOptions DefaultOptions
         {
             get
             {

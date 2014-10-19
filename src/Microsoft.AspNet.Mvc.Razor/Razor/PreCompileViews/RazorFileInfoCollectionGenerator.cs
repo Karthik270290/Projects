@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,14 +16,28 @@ namespace Microsoft.AspNet.Mvc.Razor
         protected IReadOnlyList<RazorFileInfo> FileInfos { get; private set; }
         protected CSharpParseOptions Options { get; private set; }
 
+        public string CollectionFileName { get { return "__AUTO__GeneratedViewsCollection.cs"; } }
+        public string ClassName { get; set; } = "__PreGeneratedViewCollection";
+
         public RazorFileInfoCollectionGenerator([NotNull] IReadOnlyList<RazorFileInfo> fileInfos,
-                                                 [NotNull] CSharpParseOptions options)
+                                                [NotNull] CSharpParseOptions options)
         {
             FileInfos = fileInfos;
             Options = options;
         }
 
         public virtual SyntaxTree GenerateCollection()
+        {
+            var sourceCode = GenerateCode();
+
+            var syntaxTree = SyntaxTreeGenerator.Generate(sourceCode,
+                                                          CollectionFileName,
+                                                          Options);
+
+            return syntaxTree;
+        }
+
+        internal string GenerateCode()
         {
             var builder = new StringBuilder();
             builder.Append(Top);
@@ -35,15 +50,8 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             builder.Append(Bottom);
 
-            // TODO: consider saving the file for debuggability
-            var sourceCode = builder.ToString();
-            var syntaxTree = SyntaxTreeGenerator.Generate(sourceCode, 
-                                                          "__AUTO__GeneratedViewsCollection.cs",
-                                                          Options);
-
-            return syntaxTree;
+            return builder.ToString();
         }
-
 
         protected virtual string GenerateFileEntry([NotNull] RazorFileInfo fileInfo)
         {
@@ -63,14 +71,14 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             get
             {
-                return 
+                return
 @"using System;
 using System.Collections.Generic;
 using Microsoft.AspNet.Mvc.Razor;
 
 namespace __ASP_ASSEMBLY
 {
-    public class __PreGeneratedViewCollection : " + nameof(RazorFileInfoCollection) + @"
+    public class " + ClassName + " : " + nameof(RazorFileInfoCollection) + @"
     {
         public __PreGeneratedViewCollection()
         {
@@ -96,8 +104,31 @@ namespace __ASP_ASSEMBLY
 
         protected virtual string GenerateRouteCollection(IEnumerable<RazorRoute> routes)
         {
-            // TODO: Hook up the routes here.
-            return "null";
+            // Generator code will look something like:
+            // new RazorRoute[]
+            //    {
+            //        new RazorRoute("routes[0].RouteTemplate", "routes[0].Verb"),
+            //        new RazorRoute("routes[1].RouteTemplate", "routes[1].Verb"),
+            //    };
+
+            if (routes == null || !routes.Any())
+            {
+                return "null";
+            }
+
+            var bldr = new StringBuilder();
+            bldr.Append("new ").Append(nameof(RazorRoute)).AppendLine("[]").AppendLine("                {");
+
+            foreach (var route in routes)
+            {
+                bldr.Append("                    new ").Append(nameof(RazorRoute)).Append("(");
+                bldr.Append("@\"").Append(route.RouteTemplate).Append("\", ");
+                bldr.Append("@\"").Append(route.Verb).AppendLine("\"),");
+            }
+
+            bldr.Append("                }");
+
+            return bldr.ToString();
         }
 
         protected virtual string FileFormat

@@ -3,14 +3,13 @@
 
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.AspNet.WebPages.Core
 {
     public class WebPagesActionConstraint : IActionConstraint
     {
         public static readonly string WebPagesDefaultRouteKey = "__route";
-        
+
         private readonly ICompositeViewEngine _viewEngine;
         private readonly string _constraintPath;
 
@@ -20,7 +19,7 @@ namespace Microsoft.AspNet.WebPages.Core
             _constraintPath = constraintPath;
         }
 
-        public int Order { get { return -10000; } } // TODO: This is probably not necessary
+        public int Order { get { return DefaultOrder.DefaultFrameworkSortOrder; } }
 
         public bool Accept([NotNull] ActionConstraintContext context)
         {

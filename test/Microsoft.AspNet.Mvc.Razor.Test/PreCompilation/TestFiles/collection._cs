@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNet.Mvc.Razor;
+
+namespace __ASP_ASSEMBLY
+{
+    public class __PreGeneratedViewCollection : RazorFileInfoCollection
+    {
+        public __PreGeneratedViewCollection()
+        {
+            var fileInfos = new List<RazorFileInfo>();
+            FileInfos = fileInfos;
+            RazorFileInfo info;
+
+            info = new RazorFileInfo
+            {
+                LastModified = DateTime.FromFileTimeUtc(130580640000000000),
+                Length = 1000,
+                RelativePath = @"relativePath1",
+                FullTypeName = @"RazorPageDerivedType",
+                Hash = @"Hash1",
+                Routes = new RazorRoute[]
+                {
+                    new RazorRoute(@"template1", @"get"),
+                    new RazorRoute(@"template2", @""),
+                    new RazorRoute(@"template3", @"post"),
+                },
+            };
+            fileInfos.Add(info);
+
+            info = new RazorFileInfo
+            {
+                LastModified = DateTime.FromFileTimeUtc(130580640000000000),
+                Length = 2000,
+                RelativePath = @"relativePath2",
+                FullTypeName = @"SecondType",
+                Hash = @"Hash2",
+                Routes = null,
+            };
+            fileInfos.Add(info);
+
+        }
+    }
+}
