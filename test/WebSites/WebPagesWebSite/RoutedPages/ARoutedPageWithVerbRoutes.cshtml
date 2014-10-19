@@ -1,6 +1,6 @@
-@route routedpage/{routeValue}
-@route alternatepageroute/{routeValue}
+@httpget getroutepage/{routeValue}
+@httppost postroutepage/{routeValue}
 @{
     var verb = Context.Request.Method;
     var value = ViewContext.RouteData.Values["routeValue"];
-}routedpage - @verb - @value
+}verbed page - @verb - @value
