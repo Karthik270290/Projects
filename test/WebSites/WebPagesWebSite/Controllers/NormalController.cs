@@ -1,0 +1,15 @@
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+namespace WebPagesWebSite
+{
+    public class NormalController
+    {
+        public static string Response { get { return "Normal"; } }
+
+        public string NormalAction()
+        {
+            return Response;
+        }
+    }
+}

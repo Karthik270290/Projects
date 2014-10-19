@@ -1,0 +1,8 @@
+@httpget /routedpage/{routeValue}
+@httppost /postedpage/{routeValue}
+@{
+    var verb = ViewContext.HttpContext.Method;
+    var value = ViewContext.RouteData.Values["routeValue"];
+}
+
+routedpage - @verb - @value
