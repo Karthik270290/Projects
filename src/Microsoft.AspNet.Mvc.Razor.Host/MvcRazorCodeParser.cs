@@ -90,31 +90,31 @@ namespace Microsoft.AspNet.Mvc.Razor
         protected virtual void HttpGetDirective()
         {
             AssertDirective(HttpGetKeyword);
-            RouteDirectiveHandler(verb: "get");
+            RouteDirectiveHandler(verb: "GET");
         }
 
         protected virtual void HttpPutDirective()
         {
             AssertDirective(HttpPutKeyword);
-            RouteDirectiveHandler(verb: "put");
+            RouteDirectiveHandler(verb: "PUT");
         }
 
         protected virtual void HttpPostDirective()
         {
             AssertDirective(HttpPostKeyword);
-            RouteDirectiveHandler(verb: "post");
+            RouteDirectiveHandler(verb: "POST");
         }
 
         protected virtual void HttpDeleteDirective()
         {
             AssertDirective(HttpDeleteKeyword);
-            RouteDirectiveHandler(verb: "delete");
+            RouteDirectiveHandler(verb: "DELETE");
         }
 
         protected virtual void HttpPatchDirective()
         {
             AssertDirective(HttpPatchKeyword);
-            RouteDirectiveHandler(verb: "patch");
+            RouteDirectiveHandler(verb: "PATCH");
         }
 
         protected virtual void RouteDirectiveHandler(string verb)

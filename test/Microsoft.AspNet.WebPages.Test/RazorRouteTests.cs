@@ -26,10 +26,10 @@ namespace Microsoft.AspNet.WebPages
                     new object [] { "WithCatchAll.cshtml", new[] { "myroute/{*foo}" }, null },
                     new object [] { "WithGetPutPostDeletePatch.cshtml",
                         new[] { "getroute", "putroute", "postroute", "deleteroute", "patchroute" },
-                        new[] { "get", "put", "post","delete", "patch"} },
-                    new object [] { "WithGet.cshtml", 
+                        new[] { "GET", "PUT", "POST","DELETE", "PATCH"} },
+                    new object [] { "WithGet.cshtml",
                         new [] { "route", "route/{foo}", "route/{*catchall}" },
-                        new [] { "get", "get", "get"}, },
+                        new [] { "GET", "GET", "GET"}, },
                 };
 
                 return data;
@@ -61,7 +61,7 @@ namespace Microsoft.AspNet.WebPages
                                               .ToDictionary(r => r.RouteTemplate);
 
             var foundRoutes = routesDictionary.Keys
-                                              .ToArray(); 
+                                              .ToArray();
 
             // Assert
             Assert.Equal(routes.Length, foundRoutes.Length);
@@ -74,7 +74,7 @@ namespace Microsoft.AspNet.WebPages
             {
                 Assert.Equal(routes.Length, verbs.Length);
 
-                for (int i=0; i< verbs.Length; i++)
+                for (int i = 0; i < verbs.Length; i++)
                 {
                     var routeKey = routes[i];
                     var route = routesDictionary[routeKey];

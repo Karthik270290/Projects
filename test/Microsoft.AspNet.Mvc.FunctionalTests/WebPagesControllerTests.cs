@@ -2,16 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.TestHost;
-using Newtonsoft.Json;
 using WebPagesWebSite;
 using Xunit;
 
@@ -65,8 +62,7 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         [InlineData("PageAtRoot", "Page at root")]
         [InlineData("routedpage/ValueFromTest", "routedpage - GET - ValueFromTest")]
         [InlineData("alternatepageroute/ValueFromTest", "routedpage - GET - ValueFromTest")]
-
-        // TODO: Fix failed test [InlineData("getroutepage/ValueFromTest", "verbed page - GET - ValueFromTest")]
+        [InlineData("getroutepage/ValueFromTest", "verbed page - GET - ValueFromTest")]
         public async Task CanAccessPages(string urlSuffix, string content)
         {
             // Arrange
@@ -85,10 +81,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("routedpage/ValueFromTest", "routedpage - POST - ValueFromTest")]        
+        [InlineData("routedpage/ValueFromTest", "routedpage - POST - ValueFromTest")]
         [InlineData("alternatepageroute/ValueFromTest", "routedpage - POST - ValueFromTest")]
-
-        // TODO: Fix failed test [InlineData("postroutepage/ValueFromTest", "verbed page - POST - ValueFromTest")]        
+        [InlineData("postroutepage/ValueFromTest", "verbed page - POST - ValueFromTest")]
         public async Task CanAccessPagesWithPost(string urlSuffix, string content)
         {
             // Arrange
