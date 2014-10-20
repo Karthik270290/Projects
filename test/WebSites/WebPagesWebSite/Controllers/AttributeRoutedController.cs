@@ -3,14 +3,28 @@
 
 using Microsoft.AspNet.Mvc;
 
-public class AttributeRoutedController
+namespace WebPagesWebSite
 {
-    public const string Route = "/Attributed/Normal";
-    public static string Response { get { return "Normal Attributed";} }
-
-    [Route(Route)]
-    public string NormalAttributedAction()
+    [WebSitesActionFilter]
+    public class AttributeRoutedController
     {
-        return Response;
+        public const string Route = "/Attributed/Normal";
+        public static string Response { get { return "Normal Attributed";} }
+
+        [Activate]
+        public ActionContext Context { get; set; }
+
+        [Route(Route)]
+        public string NormalAttributedAction()
+        {
+            if ((string)Context.RouteData.Values["filterData"] == "DataFromFilter")
+            {
+                return Response;
+            }
+            else
+            {
+                return "Filter did not run";
+            }
+        }
     }
 }

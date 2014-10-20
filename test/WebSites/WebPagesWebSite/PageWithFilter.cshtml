@@ -1,0 +1,12 @@
+@using Microsoft.AspNet.Mvc
+
+@functions {
+
+    [WebSitesActionFilter]
+    public void __Filters(){}
+}
+
+@{
+    // verify the filter did run
+    var dataFromFilter = ViewContext.RouteData.Values["filterData"] as string;
+}@dataFromFilter

@@ -20,10 +20,10 @@ namespace Microsoft.AspNet.WebPages.Core
         {
             if (_constraint == null)
             {
-                var options = serviceProvider.GetService<IOptions<WebPagesOptions>>();
+                var options = serviceProvider.GetRequiredService<IOptions<WebPagesOptions>>();
                 var path = options.Options.PagesFolderPath.TrimEnd(Coordinator.PathSeparators);
 
-                var viewEngine = serviceProvider.GetService<ICompositeViewEngine>();
+                var viewEngine = serviceProvider.GetRequiredService<ICompositeViewEngine>();
                 _constraint = new WebPagesActionConstraint(viewEngine,
                     path.TrimEnd(Coordinator.PathSeparators));
             }

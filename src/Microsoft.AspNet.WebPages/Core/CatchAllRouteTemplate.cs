@@ -8,7 +8,7 @@ namespace Microsoft.AspNet.WebPages.Core
 {
     public class CatchAllRouteTemplate : IRouteTemplateProvider
     {
-        public readonly string _viewAttributeRouteFormatString = "{0}/{{*__viewPath:minlength(1)}}";
+        public readonly string _viewAttributeRouteFormatString = "{0}/{{*__viewPath:Required}}";
 
         private string _urlPrefix;
 
