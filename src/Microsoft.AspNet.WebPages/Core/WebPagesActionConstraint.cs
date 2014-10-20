@@ -8,8 +8,6 @@ namespace Microsoft.AspNet.WebPages.Core
 {
     public class WebPagesActionConstraint : IActionConstraint
     {
-        public static readonly string WebPagesDefaultRouteKey = "__route";
-
         private readonly ICompositeViewEngine _viewEngine;
         private readonly string _constraintPath;
 

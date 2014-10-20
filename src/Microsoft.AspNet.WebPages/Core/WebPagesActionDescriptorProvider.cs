@@ -182,8 +182,6 @@ namespace Microsoft.AspNet.WebPages.Core
 
             string viewPath = "/" + relativePath.Replace('\\', '/').TrimStart('/');
             routedAction.AdditionalDefaults.Add(Coordinator.ViewPathRouteKey, viewPath);
-            routedAction.AdditionalDefaults.Add(WebPagesActionConstraint.WebPagesDefaultRouteKey,
-                                                route);
 
             model.Controller.Actions.Add(routedAction);
         }

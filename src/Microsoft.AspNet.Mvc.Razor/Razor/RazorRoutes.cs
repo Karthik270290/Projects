@@ -18,6 +18,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             return routes;
         }
 
+        // TODO: Should we instead compile so we can get the attributes out (for full support of filters?)
         public static IEnumerable<RazorRoute> GetRoutes([NotNull] IMvcRazorHost host, [NotNull] RelativeFileInfo fileInfo)
         {
             using (var stream = fileInfo.FileInfo.CreateReadStream())
