@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.WebPages.Core
         [Activate]
         public ViewDataDictionary ViewData { get; set; }
 
-        [WebPagesDefaultActionConvention]
+        [WebPagesRoutedActionConvention]
         public IActionResult WebPagesView(string __viewPath)
         {
             var result = ViewEngine.FindView(Context, __viewPath);

@@ -23,18 +23,6 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public bool Accept([NotNull] ActionConstraintContext context)
         {
-            var defaults = context.CurrentCandidate.Action.RouteValueDefaults;
-
-            // At this stage, the default route values from an action are not added yet
-            // to the route context, since the action wasn't yet selected.
-            object defaultValue;
-
-            if (defaults.TryGetValue(WebPagesDefaultRouteKey, out defaultValue) &&
-                defaultValue != null)
-            {
-                return true;
-            }
-
             var routeValues = context.RouteContext.RouteData.Values;
 
             var viewPath = _constraintPath

@@ -5,11 +5,45 @@ namespace Microsoft.AspNet.WebPages
 {
     public class WebPagesOptions
     {
-        public string PagesUrlPrefix { get; set; }
+        private string _pagesUrlPrefix = string.Empty;
+        private string _pagesFolderPath = string.Empty;
+        private string _routedPagesFolderPath = string.Empty;
 
-        public string PagesFolderPath { get; set; }
+        public string PagesUrlPrefix
+        {
+            get
+            {
+                return _pagesUrlPrefix;
+            }
+            set
+            {
+                _pagesUrlPrefix = value ?? string.Empty;
+            }
+        }
 
-        public string RoutedPagesFolderPath { get; set; }
+        public string PagesFolderPath
+        {
+            get
+            {
+                return _pagesFolderPath;
+            }
+            set
+            {
+                _pagesFolderPath = value ?? string.Empty;
+            }
+        }
+
+        public string RoutedPagesFolderPath
+        {
+            get
+            {
+                return _routedPagesFolderPath;
+            }
+            set
+            {
+                _routedPagesFolderPath = value ?? string.Empty;
+            }
+        }
 
         public bool UpdateRoutesFromPrecompilationAtStartup { get; set; } = true;
     }
