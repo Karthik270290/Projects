@@ -4,26 +4,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNet.Mvc.ApplicationModels;
 using Microsoft.AspNet.Mvc.Filters;
-using Microsoft.AspNet.Mvc.ApplicationModel;
 using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Mvc
 {
     public class ControllerActionDescriptorProvider : IActionDescriptorProvider
     {
+        private readonly IControllerModelBuilder _applicationModelBuilder;
         private readonly IAssemblyProvider _assemblyProvider;
-        private readonly IActionDiscoveryConventions _conventions;
         private readonly IReadOnlyList<IFilter> _globalFilters;
-        private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
+        private readonly IEnumerable<IApplicationModelConvention> _modelConventions;
 
         public ControllerActionDescriptorProvider(IAssemblyProvider assemblyProvider,
-                                                 IActionDiscoveryConventions conventions,
+                                                 IControllerModelBuilder applicationModelBuilder,
                                                  IGlobalFilterProvider globalFilters,
                                                  IOptions<MvcOptions> optionsAccessor)
         {
             _assemblyProvider = assemblyProvider;
-            _conventions = conventions;
+            _applicationModelBuilder = applicationModelBuilder;
             _globalFilters = globalFilters.Filters;
             _modelConventions = optionsAccessor.Options.ApplicationModelConventions;
         }
@@ -41,23 +41,27 @@ namespace Microsoft.AspNet.Mvc
 
         public IEnumerable<ControllerActionDescriptor> GetDescriptors()
         {
-            var model = BuildModel();
-            model.ApplyConventions(_modelConventions);
-            return ActionDescriptorBuilder.Build(model);
+            var applicationModel = BuildModel();
+            ApplicationModelConventions.ApplyConventions(applicationModel, _modelConventions);
+            return ControllerActionDescriptorBuilder.Build(applicationModel);
         }
 
-        public GlobalModel BuildModel()
+        public ApplicationModel BuildModel()
         {
-            var applicationModel = new GlobalModel();
+            var applicationModel = new ApplicationModel();
             applicationModel.Filters.AddRange(_globalFilters);
 
             var assemblies = _assemblyProvider.CandidateAssemblies;
             var types = assemblies.SelectMany(a => a.DefinedTypes);
-            var controllerTypes = types.Where(_conventions.IsController);
 
-            foreach (var controllerType in controllerTypes)
+            foreach (var type in types)
             {
-                applicationModel.AddControllerModel(controllerType, _conventions);
+                var controllerModel = _applicationModelBuilder.BuildControllerModel(type);
+                if (controllerModel != null)
+                {
+                    controllerModel.Application = applicationModel;
+                    applicationModel.Controllers.Add(controllerModel);
+                }
             }
 
             return applicationModel;

@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.FileSystems;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.ApplicationModel;
+using Microsoft.AspNet.Mvc.ApplicationModels;
 using Microsoft.AspNet.Mvc.Filters;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Framework.DependencyInjection;
@@ -19,9 +18,9 @@ namespace Microsoft.AspNet.WebPages.Core
 {
     public class WebPagesActionDescriptorProvider : INestedProvider<ActionDescriptorProviderContext>
     {
-        private readonly IActionDiscoveryConventions _conventions;
+        private readonly IControllerModelBuilder _controllerModelBuilder;
         private readonly IReadOnlyList<IFilter> _globalFilters;
-        private readonly IEnumerable<IGlobalModelConvention> _modelConventions;
+        private readonly IEnumerable<IApplicationModelConvention> _modelConventions;
         private readonly ICompilerCache _compilerCache;
         private readonly IApplicationEnvironment _appEnv;
         private readonly IMvcRazorHost _mvcRazorHost;
@@ -30,15 +29,13 @@ namespace Microsoft.AspNet.WebPages.Core
         private readonly string _routedPagesFolderName;
         private readonly bool _updatePrecompilation;
 
-        public WebPagesActionDescriptorProvider(IActionDiscoveryConventions conventions,
-                                                IGlobalFilterProvider globalFilters,
+        public WebPagesActionDescriptorProvider(IGlobalFilterProvider globalFilters,
                                                 IOptions<MvcOptions> mvcOptions,
                                                 IOptions<WebPagesOptions> webPagesOptions,
                                                 IApplicationEnvironment appEnv,
                                                 IMvcRazorHost mvcRazorHost,
                                                 ICompilerCache compilerCache)
         {
-            _conventions = conventions;
             _globalFilters = globalFilters.Filters;
             _modelConventions = mvcOptions.Options.ApplicationModelConventions;
             _webPagesUrlPrefix = webPagesOptions.Options.PagesUrlPrefix;
@@ -47,6 +44,9 @@ namespace Microsoft.AspNet.WebPages.Core
             _appEnv = appEnv;
             _mvcRazorHost = mvcRazorHost;
             _compilerCache = compilerCache;
+
+            // Using the a custom builder because we don't want to be impacted by extensibility.
+            _controllerModelBuilder = new WebPagesControllerModelBuilder();
 
             var path = webPagesOptions.Options.RoutedPagesFolderPath;
 
@@ -68,20 +68,24 @@ namespace Microsoft.AspNet.WebPages.Core
 
         public IEnumerable<ControllerActionDescriptor> GetDescriptors()
         {
-            var model = BuildModel();
+            var applicationModel = BuildModel();
 
-            // apply conventions but no global conventions apply here.
-            model.ApplyConventions(Enumerable.Empty<IGlobalModelConvention>());
+            // Apply conventions from attributes, but no global conventions apply here.
+            ApplicationModelConventions.ApplyConventions(
+                applicationModel, 
+                Enumerable.Empty<IApplicationModelConvention>());
 
-            return ActionDescriptorBuilder.Build(model);
+            return ControllerActionDescriptorBuilder.Build(applicationModel);
         }
 
-        public GlobalModel BuildModel()
+        public ApplicationModel BuildModel()
         {
-            var applicationModel = new GlobalModel();
+            var applicationModel = new ApplicationModel();
             applicationModel.Filters.AddRange(_globalFilters);
 
-            applicationModel.AddControllerModel(typeof(PageCoordinator).GetTypeInfo(), _conventions);
+            var controllerModel = _controllerModelBuilder.BuildControllerModel(typeof(PageCoordinator).GetTypeInfo());
+            controllerModel.Application = applicationModel;
+            applicationModel.Controllers.Add(controllerModel);
 
             var catchAllcontroller = applicationModel.Controllers.Single();
             var action = catchAllcontroller.Actions.Single();
@@ -102,7 +106,7 @@ namespace Microsoft.AspNet.WebPages.Core
             return applicationModel;
         }
 
-        private void ScanForRoutedPages(GlobalModel applicationModel)
+        private void ScanForRoutedPages(ApplicationModel applicationModel)
         {
             BaseRoutedModel model = null;
             var directory = new RazorDirectory(new PhysicalFileSystem(_appEnv.ApplicationBasePath),
@@ -121,7 +125,7 @@ namespace Microsoft.AspNet.WebPages.Core
             }
         }
 
-        private void GetValuesFromPrecompilation(GlobalModel applicationModel)
+        private void GetValuesFromPrecompilation(ApplicationModel applicationModel)
         {
             BaseRoutedModel model = null;
 
@@ -140,10 +144,13 @@ namespace Microsoft.AspNet.WebPages.Core
             }
         }
 
-        private BaseRoutedModel CreateBaseRoutedModel(GlobalModel applicationModel)
+        private BaseRoutedModel CreateBaseRoutedModel(ApplicationModel applicationModel)
         {
             var typeInfo = typeof(RoutedPageCoordinator).GetTypeInfo();
-            applicationModel.AddControllerModel(typeInfo, _conventions);
+
+            var controllerModel = _controllerModelBuilder.BuildControllerModel(typeInfo);
+            controllerModel.Application = applicationModel;
+            applicationModel.Controllers.Add(controllerModel);
 
             var routedController = applicationModel
                                         .Controllers
@@ -190,6 +197,19 @@ namespace Microsoft.AspNet.WebPages.Core
         {
             public ControllerModel Controller { get; set; }
             public ActionModel Action { get; set; }
+        }
+
+        private class WebPagesControllerModelBuilder : DefaultControllerModelBuilder
+        {
+            public WebPagesControllerModelBuilder()
+                : base(new DefaultActionModelBuilder())
+            {
+            }
+
+            protected override bool IsController([NotNull]TypeInfo typeInfo)
+            {
+                return true;
+            }
         }
     }
 }
