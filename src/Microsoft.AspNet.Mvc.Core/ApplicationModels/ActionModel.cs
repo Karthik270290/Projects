@@ -19,6 +19,7 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             Filters = new List<IFilter>();
             HttpMethods = new List<string>();
             Parameters = new List<ParameterModel>();
+            RouteConstraints = new List<RouteConstraintAttribute>();
         }
 
         public ActionModel([NotNull] ActionModel other)
@@ -38,18 +39,14 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             Filters = new List<IFilter>(other.Filters);
             HttpMethods = new List<string>(other.HttpMethods);
 
+            RouteConstraints = new List<RouteConstraintAttribute>(other.RouteConstraints);
+
             // Make a deep copy of other 'model' types.
             Parameters = new List<ParameterModel>(other.Parameters.Select(p => new ParameterModel(p)));
 
             if (other.AttributeRouteModel != null)
             {
                 AttributeRouteModel = new AttributeRouteModel(other.AttributeRouteModel);
-            }
-
-            if (other.AdditionalDefaults != null)
-            {
-                AdditionalDefaults = new Dictionary<string, object>(other.AdditionalDefaults,
-                                                                    StringComparer.OrdinalIgnoreCase);
             }
         }
 
@@ -73,7 +70,7 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
 
         public AttributeRouteModel AttributeRouteModel { get; set; }
 
-        public Dictionary<string, object> AdditionalDefaults { get; set; }        
+        public List<RouteConstraintAttribute> RouteConstraints { get; private set; }
 
         /// <summary>
         /// If <c>true</c>, <see cref="Description.ApiDescription"/> objects will be created for this action. 

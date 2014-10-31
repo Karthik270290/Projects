@@ -51,7 +51,7 @@ namespace Microsoft.AspNet.Mvc
                 {
                     // Controllers with multiple [Route] attributes (or user defined implementation of
                     // IRouteTemplateProvider) will generate one action descriptor per IRouteTemplateProvider
-                    // instance.
+                    // instance. 
                     // Actions with multiple [Http*] attributes or other (IRouteTemplateProvider implementations
                     // have already been identified as different actions during action discovery.
                     var actionDescriptors = CreateActionDescriptors(application, controller, action);
@@ -62,9 +62,14 @@ namespace Microsoft.AspNet.Mvc
 
                         AddApiExplorerInfo(actionDescriptor, action, controller);
                         AddRouteConstraints(actionDescriptor, controller, action);
-                        AddControllerRouteConstraints(
+                        AddRouteConstraints(
                             actionDescriptor,
                             controller.RouteConstraints,
+                            removalConstraints);
+
+                        AddRouteConstraints(
+                            actionDescriptor,
+                            action.RouteConstraints,
                             removalConstraints);
 
                         if (IsAttributeRoutedAction(actionDescriptor))
@@ -398,9 +403,9 @@ namespace Microsoft.AspNet.Mvc
             }
         }
 
-        private static void AddControllerRouteConstraints(
+        private static void AddRouteConstraints(
             ControllerActionDescriptor actionDescriptor,
-            IList<RouteConstraintAttribute> routeconstraints,
+            IEnumerable<RouteConstraintAttribute> routeconstraints,
             ISet<string> removalConstraints)
         {
             // Apply all the constraints defined on the controller (for example, [Area]) to the actions

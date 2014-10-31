@@ -185,10 +185,8 @@ namespace Microsoft.AspNet.WebPages.Core
                 routedAction.HttpMethods.Add(route.Verb);
             }
 
-            routedAction.AdditionalDefaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
             string viewPath = "/" + relativePath.Replace('\\', '/').TrimStart('/');
-            routedAction.AdditionalDefaults.Add(Coordinator.ViewPathRouteKey, viewPath);
+            routedAction.RouteConstraints.Add(new ViewValue(Coordinator.ViewPathRouteKey, viewPath));
 
             model.Controller.Actions.Add(routedAction);
         }
@@ -209,6 +207,13 @@ namespace Microsoft.AspNet.WebPages.Core
             protected override bool IsController([NotNull]TypeInfo typeInfo)
             {
                 return true;
+            }
+        }
+
+        private class ViewValue : RouteConstraintAttribute
+        {
+            public ViewValue(string key, string value) : base(key, value, false)
+            {
             }
         }
     }

@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+using System.Diagnostics;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 
@@ -22,6 +24,11 @@ namespace Microsoft.AspNet.WebPages.Core
         [WebPagesRoutedActionConvention]
         public IActionResult WebPagesView(string __viewPath)
         {
+            if (string.IsNullOrEmpty(__viewPath))
+            {
+                throw new ArgumentException("The path cannot be null or empty");
+            }
+
             var result = ViewEngine.FindView(Context, __viewPath);
 
             if (result.Success)
