@@ -12,6 +12,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
     public class AttributeMatcherTest
     {
         [Fact]
+        public void DetermineMode_ThrowsOnNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => AttributeMatcher.DetermineMode(
+                MakeTagHelperContext(new Dictionary<string, object>()), (IEnumerable<ModeAttributes<string>>)null));
+        }
+
+        [Fact]
         public void DetermineMode_FindsFullModeMatchWithSingleAttribute()
         {
             // Arrange

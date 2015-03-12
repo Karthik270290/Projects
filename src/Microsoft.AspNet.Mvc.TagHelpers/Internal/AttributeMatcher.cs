@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
         /// <returns>The <see cref="ModeMatchResult{TMode}"/>.</returns>
         public static ModeMatchResult<TMode> DetermineMode<TMode>(
             [NotNull] TagHelperContext context,
-            [NotNull] IEnumerable<ModeAttributes<TMode>> modeInfos)
+            [NotNull][NotNullCheck] IEnumerable<ModeAttributes<TMode>> modeInfos)
         {
             // true == full match, false == partial match
             var matchedAttributes = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);

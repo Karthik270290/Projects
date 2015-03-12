@@ -151,7 +151,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         }
 
         /// <inheritdoc />
-        public ModelState this[[NotNull] string key]
+        public ModelState this[[NotNull][NotNullCheck] string key]
         {
             get
             {

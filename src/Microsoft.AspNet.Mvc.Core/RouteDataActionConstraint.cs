@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
+using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Mvc
 {
@@ -10,13 +10,8 @@ namespace Microsoft.AspNet.Mvc
     /// </summary>
     public class RouteDataActionConstraint
     {
-        private RouteDataActionConstraint(string routeKey)
+        private RouteDataActionConstraint([NotNullCheck] string routeKey)
         {
-            if (routeKey == null)
-            {
-                throw new ArgumentNullException("routeKey");
-            }
-
             RouteKey = routeKey;
         }
 

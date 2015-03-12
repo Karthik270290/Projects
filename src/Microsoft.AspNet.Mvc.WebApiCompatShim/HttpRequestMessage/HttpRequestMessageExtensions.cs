@@ -377,7 +377,7 @@ namespace System.Net.Http
         /// </param>
         /// <returns>A response wrapping <paramref name="value"/> with <paramref name="statusCode"/>.</returns>
         public static HttpResponseMessage CreateResponse<T>(
-            [NotNull] this HttpRequestMessage request,
+            [NotNull][NotNullCheck] this HttpRequestMessage request,
             HttpStatusCode statusCode,
             T value,
             [NotNull] MediaTypeFormatter formatter,

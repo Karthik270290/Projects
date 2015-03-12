@@ -14,7 +14,7 @@ namespace Microsoft.AspNet.Mvc
         /// collections respectively.
         /// </summary>
         /// <param name="options">The MvcOptions</param>
-        public static void AddXmlDataContractSerializerFormatter([NotNull] this MvcOptions options)
+        public static void AddXmlDataContractSerializerFormatter([NotNull][NotNullCheck] this MvcOptions options)
         {
             options.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
 

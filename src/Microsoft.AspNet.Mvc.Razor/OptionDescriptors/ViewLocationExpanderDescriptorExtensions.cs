@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// <param name="viewLocationExpanderType">Type representing an <see cref="IViewLocationExpander"/></param>
         /// <returns>A <see cref="ViewLocationExpanderDescriptor"/> representing the added instance.</returns>
         public static ViewLocationExpanderDescriptor Add(
-            [NotNull] this IList<ViewLocationExpanderDescriptor> descriptors,
+            [NotNull][NotNullCheck] this IList<ViewLocationExpanderDescriptor> descriptors,
             [NotNull] Type viewLocationExpanderType)
         {
             var descriptor = new ViewLocationExpanderDescriptor(viewLocationExpanderType);

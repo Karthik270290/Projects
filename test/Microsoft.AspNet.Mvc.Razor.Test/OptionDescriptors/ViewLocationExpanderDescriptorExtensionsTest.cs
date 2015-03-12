@@ -11,6 +11,12 @@ namespace Microsoft.AspNet.Mvc.Razor
 {
     public class ViewLocationExpanderDescriptorExtensionsTest
     {
+        [Fact]
+        public void Add_ThrowsOnNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => ViewLocationExpanderDescriptorExtensions.Add(null, typeof(object)));
+        }
+
         [Theory]
         [InlineData(-1)]
         [InlineData(5)]
