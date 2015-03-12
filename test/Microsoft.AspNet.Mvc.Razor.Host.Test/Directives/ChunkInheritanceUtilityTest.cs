@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.AspNet.Razor.Generator.Compiler;
 using Xunit;
 
@@ -85,6 +86,19 @@ namespace Microsoft.AspNet.Mvc.Razor.Directives
 
             // Assert
             Assert.Empty(codeTrees);
+        }
+
+        [Fact]
+        public void MergeInheritedChunks_ThrowsOnNull()
+        {
+            var cache = new DefaultCodeTreeCache(new TestFileProvider());
+            var host = new MvcRazorHost(cache);
+            var defaultChunks = new Chunk[0];
+            var utility = new ChunkInheritanceUtility(host, cache, defaultChunks);
+            Assert.Equal("codeTree",
+                Assert.Throws<ArgumentNullException>(() => utility.MergeInheritedCodeTrees(null, new CodeTree[0], "dynamic")).ParamName);
+            Assert.Equal("inheritedCodeTrees",
+                Assert.Throws<ArgumentNullException>(() => utility.MergeInheritedCodeTrees(new CodeTree(), null, "dynamic")).ParamName);
         }
 
         [Fact]

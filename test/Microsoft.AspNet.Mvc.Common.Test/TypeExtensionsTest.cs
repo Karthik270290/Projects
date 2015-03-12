@@ -9,6 +9,13 @@ namespace Microsoft.AspNet.Mvc
 {
     public class TypeExtensionsTest
     {
+        [Fact]
+        public void BaseType_ThrowsOnNull()
+        {
+            Assert.Equal("type",
+                Assert.Throws<ArgumentNullException>(() => TypeExtensions.BaseType(null)).ParamName);
+        }
+
         [Theory]
         [InlineData(typeof(decimal))]
         [InlineData(typeof(Guid))]

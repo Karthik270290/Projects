@@ -40,7 +40,7 @@ namespace Microsoft.AspNet.Mvc
         }
 #endif
 
-        public static Type BaseType([NotNull] this Type type)
+        public static Type BaseType([NotNull][NotNullCheck] this Type type)
         {
             return type.GetTypeInfo().BaseType;
         }

@@ -233,7 +233,7 @@ namespace System.Net.Http
         /// <param name="configuration">The configuration to use. Can be <c>null</c>.</param>
         /// <returns>A response wrapping <paramref name="value"/> with <paramref name="statusCode"/>.</returns>
         public static HttpResponseMessage CreateResponse<T>(
-            [NotNull] this HttpRequestMessage request,
+            [NotNull][NotNullCheck] this HttpRequestMessage request,
             HttpStatusCode statusCode,
             T value,
             IEnumerable<MediaTypeFormatter> formatters)
@@ -377,7 +377,7 @@ namespace System.Net.Http
         /// </param>
         /// <returns>A response wrapping <paramref name="value"/> with <paramref name="statusCode"/>.</returns>
         public static HttpResponseMessage CreateResponse<T>(
-            [NotNull] this HttpRequestMessage request,
+            [NotNull][NotNullCheck] this HttpRequestMessage request,
             HttpStatusCode statusCode,
             T value,
             [NotNull] MediaTypeFormatter formatter,

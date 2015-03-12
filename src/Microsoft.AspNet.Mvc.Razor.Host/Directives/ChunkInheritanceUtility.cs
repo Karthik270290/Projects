@@ -79,8 +79,8 @@ namespace Microsoft.AspNet.Mvc.Razor.Directives
         /// <param name="inheritedCodeTrees"><see cref="IReadOnlyList{CodeTree}"/> inherited from <c>_GlobalImport</c>
         /// files.</param>
         /// <param name="defaultModel">The list of chunks to merge.</param>
-        public void MergeInheritedCodeTrees([NotNull] CodeTree codeTree,
-                                            [NotNull] IReadOnlyList<CodeTree> inheritedCodeTrees,
+        public void MergeInheritedCodeTrees([NotNull][NotNullCheck] CodeTree codeTree,
+                                            [NotNull][NotNullCheck] IReadOnlyList<CodeTree> inheritedCodeTrees,
                                             string defaultModel)
         {
             var mergerMappings = GetMergerMappings(codeTree, defaultModel);

@@ -8,6 +8,7 @@
         "Microsoft.Framework.PropertyHelper.Internal": { "version": "1.0.0-*", "type": "build" },
         "Microsoft.Framework.CopyOnWriteDictionary.Internal": { "version": "1.0.0-*", "type": "build" },
         "Microsoft.Framework.NotNullAttribute.Internal": { "version": "1.0.0-*", "type": "build" },
+        "Microsoft.Framework.NotNullCheckAttribute.Internal": { "version": "1.0.0-*", "type": "build" },
         "xunit.runner.aspnet": "2.0.0-aspnet-*",
         "Microsoft.Framework.DependencyInjection": "1.0.0-*"
     },

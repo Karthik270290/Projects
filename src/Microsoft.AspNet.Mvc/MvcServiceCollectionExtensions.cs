@@ -28,7 +28,7 @@ namespace Microsoft.Framework.DependencyInjection
         /// <param name="services">The services available in the application.</param>
         /// <param name="setupAction">The <see cref="MvcOptions"/> which need to be configured.</param>
         public static void ConfigureMvc(
-            [NotNull] this IServiceCollection services,
+            [NotNull][NotNullCheck] this IServiceCollection services,
             [NotNull] Action<MvcOptions> setupAction)
         {
             services.Configure(setupAction);

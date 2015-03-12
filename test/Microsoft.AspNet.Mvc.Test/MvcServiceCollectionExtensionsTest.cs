@@ -15,6 +15,14 @@ namespace Microsoft.AspNet.Mvc
     public class MvcServiceCollectionExtensionsTest
     {
         [Fact]
+        public void ConfigureMvc_ThrowsOnNull()
+        {
+            Assert.Equal("services",
+                Assert.Throws<ArgumentNullException>(() => MvcServiceCollectionExtensions.ConfigureMvc(null, o => { }))
+                    .ParamName);
+        }
+
+        [Fact]
         public void WithControllersAsServices_AddsTypesToControllerTypeProviderAndServiceCollection()
         {
             // Arrange

@@ -1,14 +1,25 @@
 {
     "version": "6.0.0-*",
     "shared": "*.cs",
+    "preprocess": "../../compiler/preprocess/*.cs",
     "dependencies": {
+        "Microsoft.Framework.NotNullCheckAttribute.Internal": { "version": "1.0.0-*", "type": "build" },
+		"Microsoft.Framework.Runtime.Roslyn.Interfaces": { "version": "1.0.0-*", "type": "build" },
+        "System.Threading.Tasks": { "version": "4.0.10-beta-*", "type": "build" }, 
+		"System.Text.Encoding": { "version": "4.0.10-beta-*", "type": "build" },
+		"System.IO": { "version": "4.0.10-beta-*", "type": "build" }   
     },
     "frameworks": {
         "net45": { },
-        "dnx451": { },
+        "dnx451": {
+          "frameworkAssemblies": {
+            "System.Collections": "",
+            "System.Runtime": ""
+          }
+        },
         "dnxcore50": {
             "dependencies": {
-		"System.ComponentModel.TypeConverter": "4.0.0-beta-*",
+                "System.ComponentModel.TypeConverter": "4.0.0-beta-*",
                 "System.Reflection.Extensions": "4.0.0-beta-*",
                 "System.Text.Encoding.Extensions": "4.0.10-beta-*"
             }

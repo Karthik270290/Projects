@@ -11,6 +11,14 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 {
     public class ModelStateDictionaryTest
     {
+        [Fact]
+        public void Indexer_ThrowsOnNullKey()
+        {
+            var dictionary = new ModelStateDictionary();
+            Assert.Equal("key",
+                Assert.Throws<ArgumentNullException>(() => dictionary[null] = new ModelState()).ParamName);
+        }
+
         [Theory]
         [InlineData(ModelValidationState.Valid)]
         [InlineData(ModelValidationState.Unvalidated)]

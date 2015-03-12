@@ -17,6 +17,16 @@ namespace System.Net.Http
 {
     public class HttpRequestMessageExtensionsTest
     {
+
+#if DNXCORE50
+        [Fact]
+        public void CreateResponse_ThrowsOnNull()
+        {
+            Assert.Equal("request",
+                Assert.Throws<ArgumentNullException>(() => HttpRequestMessageExtensions.CreateResponse(null, new object())).ParamName);
+        }
+#endif
+
         [Fact]
         public void CreateResponse_MatchingMediaType_WhenMediaTypeStringIsInvalidFormat_Throws()
         {
