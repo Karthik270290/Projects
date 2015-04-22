@@ -1,6 +1,6 @@
 {
     "description": "Abstractions for page instrumentation.",
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta4-*",
     "compilationOptions": {
         "warningsAsErrors": true
     },

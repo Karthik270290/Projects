@@ -1,10 +1,10 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta4-*",
     "dependencies": {
-        "Microsoft.AspNet.Http.Extensions": "1.0.0-*",
-        "Microsoft.AspNet.Mvc.Common": { "version": "6.0.0-*", "type": "build" },
-        "Microsoft.Framework.NotNullAttribute.Internal": { "version": "1.0.0-*", "type": "build" },
-        "Microsoft.Framework.PropertyHelper.Internal": { "version": "1.0.0-*", "type": "build" },
+        "Microsoft.AspNet.Http.Extensions": "1.0.0-beta4-*",
+        "Microsoft.AspNet.Mvc.Common": { "version": "6.0.0-beta4-*", "type": "build" },
+        "Microsoft.Framework.NotNullAttribute.Internal": { "version": "1.0.0-beta4-*", "type": "build" },
+        "Microsoft.Framework.PropertyHelper.Internal": { "version": "1.0.0-beta4-*", "type": "build" },
         "Newtonsoft.Json": "6.0.6"
     },
     "frameworks": {
