@@ -3,8 +3,8 @@
         "warningsAsErrors": false
     },
     "dependencies": {
-        "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-*",
-        "Microsoft.AspNet.Testing": "1.0.0-*",
+        "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-beta4-*",
+        "Microsoft.AspNet.Testing": "1.0.0-beta4-*",
         "Moq": "4.2.1312.1622",
         "xunit.runner.aspnet": "2.0.0-aspnet-*"
     },
