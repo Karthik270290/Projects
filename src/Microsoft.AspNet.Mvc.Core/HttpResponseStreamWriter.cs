@@ -64,7 +64,7 @@ namespace Microsoft.AspNet.Mvc
                 var index = 0;
                 while (count > 0)
                 {
-                    if (_charBufferCount == _charBufferSize)
+                    if (_byteBufferCount == _byteBufferSize)
                     {
                         FlushInternal();
                     }
