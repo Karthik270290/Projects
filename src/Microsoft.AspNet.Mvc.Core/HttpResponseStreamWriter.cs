@@ -18,7 +18,10 @@ namespace Microsoft.AspNet.Mvc
         private const int DefaultBufferSize = 1024;
         private readonly Stream _stream;
         private Encoder _encoder;
+        private byte[] _flushBuffer;
         private byte[] _byteBuffer;
+        private int _byteBufferSize;
+        private int _byteBufferCount;
         private char[] _charBuffer;
         private int _charBufferSize;
         private int _charBufferCount;
@@ -33,15 +36,55 @@ namespace Microsoft.AspNet.Mvc
             _stream = stream;
             Encoding = encoding;
             _encoder = encoding.GetEncoder();
+            _byteBufferSize = bufferSize;
+            _byteBuffer = new byte[bufferSize];
             _charBufferSize = bufferSize;
             _charBuffer = new char[bufferSize];
-            _byteBuffer = new byte[encoding.GetMaxByteCount(bufferSize)];
+            _flushBuffer = new byte[encoding.GetMaxByteCount(bufferSize)];
         }
 
         public override Encoding Encoding { get; }
 
+        public override void Write(object value)
+        {
+            var bytes = value as byte[];
+            if (bytes != null)
+            {
+                if (_charBufferCount > 0)
+                {
+                    FlushCharBuffer();
+                }
+
+                if (_byteBufferCount == _byteBufferSize)
+                {
+                    FlushInternal();
+                }
+
+                var count = bytes.Length;
+                var index = 0;
+                while (count > 0)
+                {
+                    if (_charBufferCount == _charBufferSize)
+                    {
+                        FlushInternal();
+                    }
+
+                    CopyToByteBuffer(bytes, ref index, ref count);
+                }
+            }
+            else
+            {
+                base.Write(value);
+            }
+        }
+
         public override void Write(char value)
         {
+            if (_byteBufferCount > 0)
+            {
+                FlushByteBuffer();
+            }
+
             if (_charBufferCount == _charBufferSize)
             {
                 FlushInternal();
@@ -58,6 +101,11 @@ namespace Microsoft.AspNet.Mvc
                 return;
             }
 
+            if (_byteBufferCount > 0)
+            {
+                FlushByteBuffer();
+            }
+
             while (count > 0)
             {
                 if (_charBufferCount == _charBufferSize)
@@ -69,24 +117,16 @@ namespace Microsoft.AspNet.Mvc
             }
         }
 
-        public override void Write(object value)
-        {
-            var bytes = value as byte[];
-            if (bytes != null)
-            {
-                _stream.Write(bytes, 0, bytes.Length);
-            }
-            else
-            {
-                base.Write(value);
-            }
-        }
-
         public override void Write(string value)
         {
             if (value == null)
             {
                 return;
+            }
+
+            if (_byteBufferCount > 0)
+            {
+                FlushByteBuffer();
             }
 
             var count = value.Length;
@@ -173,18 +213,23 @@ namespace Microsoft.AspNet.Mvc
 
         private void FlushInternal(bool flushStream = false, bool flushEncoder = false)
         {
-            if (_charBufferCount == 0)
+            if (_charBufferCount != 0)
             {
-                return;
+                var count = _encoder.GetBytes(_charBuffer, 0, _charBufferCount, _flushBuffer, 0, flushEncoder);
+                if (count > 0)
+                {
+                    _stream.Write(_flushBuffer, 0, count);
+                }
+
+                _charBufferCount = 0;
             }
 
-            var count = _encoder.GetBytes(_charBuffer, 0, _charBufferCount, _byteBuffer, 0, flushEncoder);
-            if (count > 0)
+            if (_byteBufferCount != 0)
             {
-                _stream.Write(_byteBuffer, 0, count);
-            }
+                _stream.Write(_byteBuffer, 0, _byteBufferCount);
 
-            _charBufferCount = 0;
+                _byteBufferCount = 0;
+            }
 
             if (flushStream)
             {
@@ -192,20 +237,49 @@ namespace Microsoft.AspNet.Mvc
             }
         }
 
+        private void FlushCharBuffer()
+        {
+            if (_charBufferCount != 0)
+            {
+                var count = _encoder.GetBytes(_charBuffer, 0, _charBufferCount, _flushBuffer, 0, true);
+                if (count > 0)
+                {
+                    _stream.Write(_flushBuffer, 0, count);
+                }
+
+                _charBufferCount = 0;
+            }
+        }
+
+        private void FlushByteBuffer()
+        {
+            if (_byteBufferCount != 0)
+            {
+                _stream.Write(_byteBuffer, 0, _byteBufferCount);
+
+                _byteBufferCount = 0;
+            }
+        }
+
         private async Task FlushInternalAsync(bool flushStream = false, bool flushEncoder = false)
         {
-            if (_charBufferCount == 0)
+            if (_charBufferCount != 0)
             {
-                return;
+                var count = _encoder.GetBytes(_charBuffer, 0, _charBufferCount, _flushBuffer, 0, flushEncoder);
+                if (count > 0)
+                {
+                    await _stream.WriteAsync(_flushBuffer, 0, count);
+                }
+
+                _charBufferCount = 0;
             }
 
-            var count = _encoder.GetBytes(_charBuffer, 0, _charBufferCount, _byteBuffer, 0, flushEncoder);
-            if (count > 0)
+            if (_byteBufferCount != 0)
             {
-                await _stream.WriteAsync(_byteBuffer, 0, count);
-            }
+                await _stream.WriteAsync(_byteBuffer, 0, _byteBufferCount);
 
-            _charBufferCount = 0;
+                _byteBufferCount = 0;
+            }
 
             if (flushStream)
             {
@@ -240,6 +314,22 @@ namespace Microsoft.AspNet.Mvc
                 count: remaining * sizeof(char));
 
             _charBufferCount += remaining;
+            index += remaining;
+            count -= remaining;
+        }
+
+        private void CopyToByteBuffer(byte[] bytes, ref int index, ref int count)
+        {
+            var remaining = Math.Min(_byteBufferSize - _byteBufferCount, count);
+
+            Buffer.BlockCopy(
+                src: bytes,
+                srcOffset: index,
+                dst: _byteBuffer,
+                dstOffset: _byteBufferCount,
+                count: remaining);
+
+            _byteBufferCount += remaining;
             index += remaining;
             count -= remaining;
         }

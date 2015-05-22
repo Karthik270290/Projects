@@ -20,7 +20,8 @@ namespace MvcSample.Web
 
         public ActionResult Index()
         {
-            return View("MyView", CreateUser());
+            //return View("MyView", CreateUser());
+            return View();
         }
 
         public IActionResult NullUser()
