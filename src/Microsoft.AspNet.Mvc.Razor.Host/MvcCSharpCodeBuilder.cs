@@ -39,7 +39,7 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             return csharpCodeVisitor;
         }
-
+        
         protected override CSharpCodeWritingScope BuildClassDeclaration(CSharpCodeWriter writer)
         {
             // Grab the last model chunk so it gets intellisense.

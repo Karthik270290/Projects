@@ -481,7 +481,14 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             if (value != null)
             {
-                WriteLiteralTo(writer, value.ToString());
+                if (value is byte[])
+                {
+                    writer.Write(value);
+                }
+                else
+                {
+                    WriteLiteralTo(writer, value.ToString());
+                }
             }
         }
 
