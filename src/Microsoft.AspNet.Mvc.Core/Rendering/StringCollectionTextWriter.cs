@@ -64,6 +64,11 @@ namespace Microsoft.AspNet.Mvc.Rendering
             Buffer.Add(buffer, index, count);
         }
 
+        public override void Write(object value)
+        {
+            Buffer.Add(value);
+        }
+
         /// <inheritdoc />
         public override void Write(string value)
         {
@@ -74,7 +79,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             Buffer.Add(value);
         }
-
+        
         /// <inheritdoc />
         public override Task WriteAsync(char value)
         {
@@ -181,12 +186,14 @@ namespace Microsoft.AspNet.Mvc.Rendering
             }
         }
 
-        private static async Task WriteListAsync(TextWriter writer, BufferEntryCollection values)
+        private static Task WriteListAsync(TextWriter writer, BufferEntryCollection values)
         {
             foreach (var value in values)
             {
-                await writer.WriteAsync(value);
+                writer.Write(value);
             }
+
+            return _completedTask;
         }
     }
 }

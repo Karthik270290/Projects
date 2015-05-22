@@ -36,6 +36,24 @@ namespace Microsoft.AspNet.Mvc.Razor
 
         protected virtual void Visit(Utf8Chunk chunk)
         {
+            if (Context.Host.DesignTimeMode || chunk.Bytes.Length == 0)
+            {
+                // Skip generating the chunk if we're in design time or if the chunk is empty.
+                return;
+            }
+
+            if (Context.Host.EnableInstrumentation)
+            {
+                Writer.WriteStartInstrumentationContext(Context, chunk.Association, isLiteral: true);
+            }
+
+            if (Context.ExpressionRenderingMode == ExpressionRenderingMode.WriteToOutput)
+            {
+                RenderPreWriteStart(Writer, Context);
+            }
+
+            //Writer.WriteStringLiteral(chunk.Text);
+
             Writer.Write($"new byte[{chunk.Bytes.Length}]");
             Writer.Write(" { ");
             for (int i = 0; i < chunk.Bytes.Length; i++)
@@ -44,6 +62,16 @@ namespace Microsoft.AspNet.Mvc.Razor
                 Writer.Write(", ");
             }
             Writer.Write(" }");
+
+            if (Context.ExpressionRenderingMode == ExpressionRenderingMode.WriteToOutput)
+            {
+                Writer.WriteEndMethodInvocation();
+            }
+
+            if (Context.Host.EnableInstrumentation)
+            {
+                Writer.WriteEndInstrumentationContext(Context);
+            }
         }
     }
 }

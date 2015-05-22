@@ -442,6 +442,13 @@ namespace Microsoft.AspNet.Mvc.Razor
                 return;
             }
 
+            var bytes = value as byte[];
+            if (bytes != null)
+            {
+                writer.Write(bytes);
+                return;
+            }
+
             WriteTo(writer, encoder, value.ToString());
         }
 

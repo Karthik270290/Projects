@@ -1,5 +1,10 @@
 ﻿@using MvcSample.Web.Models
 @model User
+
+@{
+    Layout = null;
+    await FlushAsync(); }
+
 @{
     ViewBag.Title = "Home Page";
     string nullValue = null;

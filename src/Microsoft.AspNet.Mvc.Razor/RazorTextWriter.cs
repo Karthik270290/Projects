@@ -61,12 +61,18 @@ namespace Microsoft.AspNet.Mvc.Razor
         public override void Write(object value)
         {
             var htmlString = value as HtmlString;
+            var bytes = value as byte[];
             if (htmlString != null)
             {
                 htmlString.WriteTo(TargetWriter);
                 return;
             }
-
+            else if (bytes != null)
+            {
+                TargetWriter.Write(bytes);
+                return;
+            }
+            
             base.Write(value);
         }
 

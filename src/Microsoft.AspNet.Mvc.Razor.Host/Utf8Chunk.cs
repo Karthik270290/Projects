@@ -10,16 +10,21 @@ namespace Microsoft.AspNet.Mvc.Razor
 {
     public class Utf8Chunk : Chunk
     {
-        public Utf8Chunk([NotNull] string literal)
+        public Utf8Chunk([NotNull] LiteralChunk literal)
         {
-            Bytes = Encoding.UTF8.GetBytes(literal);
-        }
-
-        public Utf8Chunk([NotNull] byte[] bytes)
-        {
-            Bytes = bytes;
+            Text = literal.Text;
+            Bytes = Encoding.UTF8.GetBytes(literal.Text);
+            Start = literal.Start;
+            Association = literal.Association;
         }
 
         public byte[] Bytes { get; set; }
+
+        public string Text { get; }
+
+        public override string ToString()
+        {
+            return Start + " = " + Text;
+        }
     }
 }

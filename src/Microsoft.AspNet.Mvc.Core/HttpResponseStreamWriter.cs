@@ -69,6 +69,19 @@ namespace Microsoft.AspNet.Mvc
             }
         }
 
+        public override void Write(object value)
+        {
+            var bytes = value as byte[];
+            if (bytes != null)
+            {
+                _stream.Write(bytes, 0, bytes.Length);
+            }
+            else
+            {
+                base.Write(value);
+            }
+        }
+
         public override void Write(string value)
         {
             if (value == null)
