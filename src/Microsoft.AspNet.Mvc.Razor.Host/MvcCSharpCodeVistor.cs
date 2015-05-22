@@ -16,10 +16,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             : base(writer, context)
         {
         }
-
-        protected override void Visit(Utf8Chunk chunk)
-        {
-        }
+        
         protected override void Visit(InjectChunk chunk)
         {
         }

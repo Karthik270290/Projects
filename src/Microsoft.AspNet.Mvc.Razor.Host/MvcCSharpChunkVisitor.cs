@@ -18,10 +18,6 @@ namespace Microsoft.AspNet.Mvc.Razor
 
         public override void Accept(Chunk chunk)
         {
-            if (chunk is Utf8Chunk)
-            {
-                Visit((Utf8Chunk)chunk);
-            }
             if (chunk is InjectChunk)
             {
                 Visit((InjectChunk)chunk);
@@ -36,7 +32,6 @@ namespace Microsoft.AspNet.Mvc.Razor
             }
         }
 
-        protected abstract void Visit(Utf8Chunk chunk);
         protected abstract void Visit(InjectChunk chunk);
         protected abstract void Visit(ModelChunk chunk);
     }

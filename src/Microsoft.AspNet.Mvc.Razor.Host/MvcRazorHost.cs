@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 #if NET45
@@ -231,10 +232,14 @@ namespace Microsoft.AspNet.Mvc.Razor
             // files checksum and line pragmas to enable DesignTime debugging.
             var normalizedPath = _pathNormalizer.NormalizePath(context.SourceFile);
             var inheritedChunks = ChunkInheritanceUtility.GetInheritedCodeTrees(normalizedPath);
-
+            
             ChunkInheritanceUtility.MergeInheritedCodeTrees(context.CodeTreeBuilder.CodeTree,
                                                          inheritedChunks,
                                                          DefaultModel);
+
+            var newTree = new List<Chunk>();
+            ConvertLiteralChunksToUtf8Chunks(context.CodeTreeBuilder.CodeTree.Chunks, newTree);
+            context.CodeTreeBuilder.CodeTree.Chunks = newTree;
 
             return new MvcCSharpCodeBuilder(context,
                                             DefaultModel,
@@ -244,6 +249,32 @@ namespace Microsoft.AspNet.Mvc.Razor
                                                 ModelExpressionTypeName = ModelExpressionType,
                                                 CreateModelExpressionMethodName = CreateModelExpressionMethod
                                             });
+        }
+
+        private void ConvertLiteralChunksToUtf8Chunks(IList<Chunk> source, IList<Chunk> dest)
+        {
+            foreach (var chunk in source)
+            {
+                if (chunk is LiteralChunk)
+                {
+                    dest.Add(new Utf8Chunk(((LiteralChunk)chunk).Text));
+                }
+                else if (chunk is ChunkBlock)
+                {
+                    var chunkBlock = (ChunkBlock)chunk;
+                    var childTree = new List<Chunk>();
+                    ConvertLiteralChunksToUtf8Chunks(chunkBlock.Children, childTree);
+                    dest.Add(new ChunkBlock {
+                        Association = chunkBlock.Association,
+                        Start = chunkBlock.Start,
+                        Children = childTree
+                    });
+                }
+                else
+                {
+                    dest.Add(chunk);
+                }
+            }
         }
     }
 }
