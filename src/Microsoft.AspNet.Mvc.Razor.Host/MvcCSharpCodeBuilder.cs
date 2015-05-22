@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         protected override CSharpCodeVisitor CreateCSharpCodeVisitor([NotNull] CSharpCodeWriter writer,
                                                                      [NotNull] CodeBuilderContext context)
         {
-            var csharpCodeVisitor = new Utf8LiteralCSharpCodeVisitor(base.CreateCSharpCodeVisitor(writer, context));
+            var csharpCodeVisitor = new Utf8LiteralCSharpCodeVisitor(base.CreateCSharpCodeVisitor(writer, context), writer, context);
 
             csharpCodeVisitor.TagHelperRenderer.AttributeValueCodeRenderer =
                 new MvcTagHelperAttributeValueCodeRenderer(_tagHelperAttributeContext);
