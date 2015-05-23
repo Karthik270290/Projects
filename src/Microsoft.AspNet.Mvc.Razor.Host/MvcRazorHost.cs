@@ -267,29 +267,13 @@ namespace Microsoft.AspNet.Mvc.Razor
                         dest.Add(literalChunk);
                     }
                 }
-                else if (chunk is ExpressionBlockChunk)
-                {
-                    var chunkBlock = (ExpressionBlockChunk)chunk;
-                    var childTree = new List<Chunk>();
-                    ConvertLiteralChunksToUtf8Chunks(chunkBlock.Children, childTree);
-                    dest.Add(new ExpressionBlockChunk
-                    {
-                        Association = chunkBlock.Association,
-                        Start = chunkBlock.Start,
-                        Children = childTree
-                    });
-                }
                 else if (chunk is ChunkBlock)
                 {
                     var chunkBlock = (ChunkBlock)chunk;
                     var childTree = new List<Chunk>();
                     ConvertLiteralChunksToUtf8Chunks(chunkBlock.Children, childTree);
-                    dest.Add(new ChunkBlock
-                    {
-                        Association = chunkBlock.Association,
-                        Start = chunkBlock.Start,
-                        Children = childTree
-                    });
+                    chunkBlock.Children = childTree;
+                    dest.Add(chunkBlock);
                 }
                 else
                 {

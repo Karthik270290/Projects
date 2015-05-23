@@ -2,10 +2,6 @@
 @model User
 
 @{
-    Layout = null;
-    await FlushAsync(); }
-
-@{
     ViewBag.Title = "Home Page";
     string nullValue = null;
 
@@ -70,9 +66,9 @@
     <h3>Partial Async: @await Html.PartialAsync("HelloWorldPartial", Model)</h3>
     <h3>
         Render Partial Async (Custom model): @{ await RenderHelloWorldPartial(new User()
-                                                {
-                                                    Name="Bob"
-                                                });
+            {
+                Name = "Bob"
+            });
         }
     </h3>
 
@@ -158,11 +154,11 @@
     </div>
     <div style="float: left; border: 5px solid red; margin: 5px;">
         <p>Tags from View():</p>
-        @await Component.InvokeAsync("Tags", 5, "View")
+        @{ await Component.RenderInvokeAsync("Tags", 5, "View"); }
         <p>Tags from Content():</p>
-        <p>@await Component.InvokeAsync("Tags", 5, "Content")</p>
+        <p>@{ await Component.InvokeAsync("Tags", 5, "Content"); }</p>
         <p>Tags from Json():</p>
-        <p>@await Component.InvokeAsync("Tags", 5, "Json")</p>
+        <p>@{ await Component.InvokeAsync("Tags", 5, "Json"); }</p>
         <p style="padding: 0px 10px;">'@ViewBag.Title' should match page heading (still)</p>
     </div>
     <div style="float: left; border: thick solid lightskyblue; margin: 5px; padding: 7px;">

@@ -4,11 +4,12 @@
 @{
     // ViewBag.Title = "Home Page";
     //Layout = null;
+    var className = "test";
 }
 
 <div>
     @using (Html.BeginForm())
     {
-        <p>Hello World</p>
+        <p class="@className">Hello World: @DateTime.Now</p>
     }
 </div>
