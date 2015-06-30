@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Internal;
 using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding
@@ -19,13 +18,12 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         /// <inheritdoc />
         public async Task<ModelBindingResult> BindModelAsync([NotNull] ModelBindingContext bindingContext)
         {
-            if (bindingContext.ModelType != typeof(IFormCollection) &&
-                bindingContext.ModelType != typeof(FormCollection))
+            if (bindingContext.ModelType != typeof(IFormCollection))
             {
                 return null;
             }
 
-            object model;
+            object model = null;
             var request = bindingContext.OperationBindingContext.HttpContext.Request;
             if (request.HasFormContentType)
             {
@@ -34,15 +32,10 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 {
                     model = form;
                 }
-                else
-                {
-                    var formValuesLookup = form.ToDictionary(p => p.Key, p => p.Value);
-                    model = new FormCollection(formValuesLookup, form.Files);
-                }
             }
             else
             {
-                model = new FormCollection(new Dictionary<string, string[]>());
+                return null;
             }
 
             var validationNode =

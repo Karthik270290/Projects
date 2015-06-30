@@ -26,7 +26,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 { "field2", new string[] { "value2" } }
             });
             var httpContext = GetMockHttpContext(formCollection);
-            var bindingContext = GetBindingContext(typeof(FormCollection), httpContext);
+            var bindingContext = GetBindingContext(typeof(IFormCollection), httpContext);
             var binder = new FormCollectionModelBinder();
 
             // Act
@@ -38,6 +38,26 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             Assert.Equal(2, form.Count);
             Assert.Equal("value1", form["field1"]);
             Assert.Equal("value2", form["field2"]);
+        }
+
+        [Fact]
+        public async Task FormCollectionModelBinder_FormCollection_BindFails()
+        {
+            // Arrange
+            var formCollection = new FormCollection(new Dictionary<string, string[]>
+            {
+                { "field1", new string[] { "value1" } },
+                { "field2", new string[] { "value2" } }
+            });
+            var httpContext = GetMockHttpContext(formCollection);
+            var bindingContext = GetBindingContext(typeof(FormCollection), httpContext);
+            var binder = new FormCollectionModelBinder();
+
+            // Act
+            var result = await binder.BindModelAsync(bindingContext);
+
+            // Assert
+            Assert.Null(result);
         }
 
         [Fact]
@@ -61,7 +81,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         }
 
         [Fact]
-        public async Task FormCollectionModelBinder_NoForm_BindSuccessful_ReturnsEmptyFormCollection()
+        public async Task FormCollectionModelBinder_NoForm_BindSuccessful_ReturnsNull()
         {
             // Arrange
             var httpContext = GetMockHttpContext(null, hasForm: false);
@@ -72,9 +92,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             var result = await binder.BindModelAsync(bindingContext);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType(typeof(FormCollection), result.Model);
-            Assert.Empty((FormCollection)result.Model);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -87,7 +105,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 { "field2", new string[] { "value2" } }
             });
             var httpContext = GetMockHttpContext(formCollection);
-            var bindingContext = GetBindingContext(typeof(FormCollection), httpContext);
+            var bindingContext = GetBindingContext(typeof(IFormCollection), httpContext);
             var binder = new FormCollectionModelBinder();
 
             // Act
