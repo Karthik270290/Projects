@@ -1,0 +1,39 @@
+﻿{
+  "description": "Tag Helpers to aid with localizing ASP.NET MVC applications.",
+  "version": "0.1.0-pre-*",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aspnet/mvc"
+  },
+  "compilationOptions": {
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk"
+  },
+  "dependencies": {
+    "Microsoft.AspNet.Mvc.Localization": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.Razor": "6.0.0-*",
+    "Microsoft.Extensions.Caching.Memory": "1.0.0-*",
+    "Microsoft.Extensions.FileSystemGlobbing": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": {
+      "version": "1.0.0-*",
+      "type": "build"
+    },
+    "Microsoft.Extensions.PropertyHelper.Sources": {
+      "version": "1.0.0-*",
+      "type": "build"
+    }
+  },
+  "frameworks": {
+    "net451": {},
+    "dotnet5.5": {
+      "dependencies": {
+        "System.Security.Cryptography.Algorithms": "4.0.0-*"
+      }
+    }
+  },
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "bower_components"
+  ]
+}

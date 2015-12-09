@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24711.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{DAAE4C74-D06F-4874-A166-33305D2643CE}"
 EndProject
@@ -82,6 +82,10 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.Mvc.TestDiagnosticListener.Sources", "test\Microsoft.AspNet.Mvc.TestDiagnosticListener.Sources\Microsoft.AspNet.Mvc.TestDiagnosticListener.Sources.xproj", "{9879B5D5-2325-4A81-B4DF-F279FE8FEEB4}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MvcSandbox", "samples\MvcSandbox\MvcSandbox.xproj", "{14ED4476-9F24-4776-8417-EA6927F6C9C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prototypes", "prototypes", "{03EEB713-003A-48F3-ABA0-051B00EF09A4}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.Mvc.TagHelpers.Localization", "prototypes\Microsoft.AspNet.Mvc.TagHelpers.Localization\Microsoft.AspNet.Mvc.TagHelpers.Localization.xproj", "{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UrlHelperSample.Web", "samples\UrlHelperSample.Web\UrlHelperSample.Web.xproj", "{73F095D2-D0BD-4D03-BC17-D7A5EF0C0191}"
 EndProject
@@ -495,6 +499,18 @@ Global
 		{14ED4476-9F24-4776-8417-EA6927F6C9C9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{14ED4476-9F24-4776-8417-EA6927F6C9C9}.Release|x86.ActiveCfg = Release|Any CPU
 		{14ED4476-9F24-4776-8417-EA6927F6C9C9}.Release|x86.Build.0 = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Debug|x86.Build.0 = Debug|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|x86.ActiveCfg = Release|Any CPU
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A}.Release|x86.Build.0 = Release|Any CPU
 		{73F095D2-D0BD-4D03-BC17-D7A5EF0C0191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73F095D2-D0BD-4D03-BC17-D7A5EF0C0191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73F095D2-D0BD-4D03-BC17-D7A5EF0C0191}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -630,6 +646,7 @@ Global
 		{8FC726B5-E766-44E0-8B38-1313B6D8D9A7} = {3BA657BF-28B1-42DA-B5B0-1C4601FCF7B1}
 		{9879B5D5-2325-4A81-B4DF-F279FE8FEEB4} = {3BA657BF-28B1-42DA-B5B0-1C4601FCF7B1}
 		{14ED4476-9F24-4776-8417-EA6927F6C9C9} = {DAAE4C74-D06F-4874-A166-33305D2643CE}
+		{E10B1A58-0984-44FF-9C8C-BDD400D29B0A} = {03EEB713-003A-48F3-ABA0-051B00EF09A4}
 		{73F095D2-D0BD-4D03-BC17-D7A5EF0C0191} = {DAAE4C74-D06F-4874-A166-33305D2643CE}
 		{364EC3C6-C9DB-45E0-A0F2-1EE61E4B429B} = {DAAE4C74-D06F-4874-A166-33305D2643CE}
 		{B18ADE62-35DE-4A06-8E1D-EDD6245F7F4D} = {DAAE4C74-D06F-4874-A166-33305D2643CE}
