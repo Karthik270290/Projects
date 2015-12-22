@@ -37,7 +37,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 var resourceKey = aspLocAttr.Minimized
                     ? (await output.GetChildContentAsync()).GetContent()
                     : aspLocAttr.Value.ToString();
-                output.Content.SetContent(localizer.Html(resourceKey));
+                output.Content.SetContent(localizer.GetHtml(resourceKey));
                 output.Attributes.Remove(aspLocAttr);
             }
 
@@ -51,7 +51,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                     var resourceKey = attribute.Minimized
                         ? attributeToLocalize.Value.ToString()
                         : attribute.Value.ToString();
-                    attributeToLocalize.Value = localizer.Html(resourceKey);
+                    attributeToLocalize.Value = localizer.GetHtml(resourceKey);
                 }
                 output.Attributes.Remove(attribute);
             }
