@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Reflection;
+using Microsoft.AspNet.Mvc.Core;
 using Microsoft.AspNet.Mvc.Infrastructure;
 
 namespace Microsoft.AspNet.Mvc.Controllers
@@ -21,9 +23,23 @@ namespace Microsoft.AspNet.Mvc.Controllers
         {
             _typeActivatorCache = typeActivatorCache;
         }
+
         /// <inheritdoc />
-        public virtual object Create(ActionContext actionContext, Type controllerType)
+        public virtual object Create(ControllerContext actionContext)
         {
+            var controllerType = actionContext.ActionDescriptor.ControllerTypeInfo.AsType();
+            var controllerTypeInfo = controllerType.GetTypeInfo();
+            if (controllerTypeInfo.IsValueType ||
+                controllerTypeInfo.IsInterface ||
+                controllerTypeInfo.IsAbstract ||
+                (controllerTypeInfo.IsGenericType && controllerTypeInfo.IsGenericTypeDefinition))
+            {
+                var message = Resources.FormatValueInterfaceAbstractOrOpenGenericTypesCannotBeActivated(
+                    controllerType.FullName,
+                    GetType().FullName);
+                throw new InvalidOperationException(message);
+            }
+
             if (actionContext == null)
             {
                 throw new ArgumentNullException(nameof(actionContext));
@@ -36,6 +52,15 @@ namespace Microsoft.AspNet.Mvc.Controllers
 
             var serviceProvider = actionContext.HttpContext.RequestServices;
             return _typeActivatorCache.CreateInstance<object>(serviceProvider, controllerType);
+        }
+
+        public virtual void Release(object controller)
+        {
+            var disposable = controller as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

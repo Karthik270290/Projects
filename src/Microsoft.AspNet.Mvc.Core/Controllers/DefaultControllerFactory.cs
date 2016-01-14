@@ -61,20 +61,7 @@ namespace Microsoft.AspNet.Mvc.Controllers
                     nameof(ControllerContext)));
             }
 
-            var controllerType = context.ActionDescriptor.ControllerTypeInfo.AsType();
-            var controllerTypeInfo = controllerType.GetTypeInfo();
-            if (controllerTypeInfo.IsValueType ||
-                controllerTypeInfo.IsInterface ||
-                controllerTypeInfo.IsAbstract ||
-                (controllerTypeInfo.IsGenericType && controllerTypeInfo.IsGenericTypeDefinition))
-            {
-                var message = Resources.FormatValueInterfaceAbstractOrOpenGenericTypesCannotBeActivated(
-                    controllerType.FullName, 
-                    GetType().FullName);
-                throw new InvalidOperationException(message);
-            }
-
-            var controller = _controllerActivator.Create(context, controllerType);
+            var controller = _controllerActivator.Create(context);
             foreach (var propertyActivator in _propertyActivators)
             {
                 propertyActivator.Activate(context, controller);
@@ -86,12 +73,7 @@ namespace Microsoft.AspNet.Mvc.Controllers
         /// <inheritdoc />
         public virtual void ReleaseController(object controller)
         {
-            var disposableController = controller as IDisposable;
-
-            if (disposableController != null)
-            {
-                disposableController.Dispose();
-            }
+            _controllerActivator.Release(controller);
         }
     }
 }
