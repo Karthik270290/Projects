@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Reflection;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc.Abstractions;
 using Microsoft.AspNet.Mvc.Infrastructure;
@@ -26,11 +27,18 @@ namespace Microsoft.AspNet.Mvc.Controllers
             {
                 RequestServices = serviceProvider.Object
             };
-            var actionContext = new ActionContext(httpContext,
-                                                  new RouteData(),
-                                                  new ActionDescriptor());
+
+            var actionContext = new ControllerContext(
+                new ActionContext(
+                    httpContext,
+                    new RouteData(),
+                    new ControllerActionDescriptor
+                    {
+                        ControllerTypeInfo = type.GetTypeInfo()
+                    }));
+
             // Act
-            var instance = activator.Create(actionContext, type);
+            var instance = activator.Create(actionContext);
 
             // Assert
             Assert.IsType(type, instance);
@@ -46,16 +54,23 @@ namespace Microsoft.AspNet.Mvc.Controllers
             serviceProvider.Setup(s => s.GetService(typeof(TestService)))
                            .Returns(testService)
                            .Verifiable();
-                           
+
             var httpContext = new DefaultHttpContext
             {
                 RequestServices = serviceProvider.Object
             };
-            var actionContext = new ActionContext(httpContext,
-                                                  new RouteData(),
-                                                  new ActionDescriptor());
+
+            var actionContext = new ControllerContext(
+                new ActionContext(
+                    httpContext,
+                    new RouteData(),
+                    new ControllerActionDescriptor
+                    {
+                        ControllerTypeInfo = typeof(TypeDerivingFromControllerWithServices).GetTypeInfo()
+                    }));
+
             // Act
-            var instance = activator.Create(actionContext, typeof(TypeDerivingFromControllerWithServices));
+            var instance = activator.Create(actionContext);
 
             // Assert
             var controller = Assert.IsType<TypeDerivingFromControllerWithServices>(instance);

@@ -3,6 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Mvc.Infrastructure;
+using Moq;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.ViewComponents
@@ -13,15 +15,16 @@ namespace Microsoft.AspNet.Mvc.ViewComponents
         public void DefaultViewComponentActivator_ActivatesViewComponentContext()
         {
             // Arrange
-            var activator = new DefaultViewComponentActivator();
+            var typeActivator = Mock.Of<ITypeActivatorCache>();
+            var activator = new DefaultViewComponentActivator(typeActivator);
 
             var context = new ViewComponentContext();
-            var instance = new TestViewComponent();
 
             // Act
-            activator.Activate(instance, context);
+            var instance = activator.Create(context) as ViewComponent;
 
             // Assert
+            Assert.NotNull(instance);
             Assert.Same(context, instance.ViewComponentContext);
         }
 
@@ -29,15 +32,16 @@ namespace Microsoft.AspNet.Mvc.ViewComponents
         public void DefaultViewComponentActivator_ActivatesViewComponentContext_IgnoresNonPublic()
         {
             // Arrange
-            var activator = new DefaultViewComponentActivator();
+            var typeActivator = Mock.Of<ITypeActivatorCache>();
+            var activator = new DefaultViewComponentActivator(typeActivator);
 
             var context = new ViewComponentContext();
-            var instance = new VisibilityViewComponent();
 
             // Act
-            activator.Activate(instance, context);
+            var instance = activator.Create(context) as VisibilityViewComponent;
 
             // Assert
+            Assert.NotNull(instance);
             Assert.Same(context, instance.ViewComponentContext);
             Assert.Null(instance.C);
         }

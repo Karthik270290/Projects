@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNet.Mvc.ViewComponents
@@ -18,14 +19,21 @@ namespace Microsoft.AspNet.Mvc.ViewComponents
     /// </remarks>
     public class DefaultViewComponentActivator : IViewComponentActivator
     {
+        private readonly ITypeActivatorCache _typeActivatorCache;
         private readonly Func<Type, PropertyActivator<ViewComponentContext>[]> _getPropertiesToActivate;
         private readonly ConcurrentDictionary<Type, PropertyActivator<ViewComponentContext>[]> _injectActions;
 
         /// <summary>
         /// Initializes a new instance of <see cref="DefaultViewComponentActivator"/> class.
         /// </summary>
-        public DefaultViewComponentActivator()
+        public DefaultViewComponentActivator(ITypeActivatorCache typeActivatorCache)
         {
+            if (typeActivatorCache == null)
+            {
+                throw new ArgumentNullException(nameof(typeActivatorCache));
+            }
+
+            _typeActivatorCache = typeActivatorCache;
             _injectActions = new ConcurrentDictionary<Type, PropertyActivator<ViewComponentContext>[]>();
             _getPropertiesToActivate = type =>
                 PropertyActivator<ViewComponentContext>.GetPropertiesToActivate(
@@ -35,12 +43,11 @@ namespace Microsoft.AspNet.Mvc.ViewComponents
         }
 
         /// <inheritdoc />
-        public virtual void Activate(object viewComponent, ViewComponentContext context)
+        public virtual object Create(ViewComponentContext context)
         {
-            if (viewComponent == null)
-            {
-                throw new ArgumentNullException(nameof(viewComponent));
-            }
+            var viewComponent = _typeActivatorCache.CreateInstance<object>(
+                context.ViewContext.HttpContext.RequestServices,
+                context.ViewComponentDescriptor.Type);
 
             if (context == null)
             {
@@ -55,6 +62,18 @@ namespace Microsoft.AspNet.Mvc.ViewComponents
             {
                 var activateInfo = propertiesToActivate[i];
                 activateInfo.Activate(viewComponent, context);
+            }
+
+            return viewComponent;
+        }
+
+        /// <inheritdoc />
+        public virtual void Release(object viewComponent)
+        {
+            var disposable = viewComponent as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
             }
         }
 

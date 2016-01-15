@@ -34,7 +34,7 @@ namespace Microsoft.AspNet.Mvc.Controllers
             };
 
             var activator = new Mock<IControllerActivator>();
-            activator.Setup(a => a.Create(context, typeof(MyController)))
+            activator.Setup(a => a.Create(context))
                      .Returns(expected)
                      .Verifiable();
 
