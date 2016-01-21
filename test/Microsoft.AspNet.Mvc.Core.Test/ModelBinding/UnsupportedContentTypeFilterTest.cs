@@ -44,9 +44,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 
             // Assert
             Assert.NotNull(context.Result);
-            var status = Assert.IsType<HttpStatusCodeResult>(context.Result);
-
-            Assert.Equal(StatusCodes.Status415UnsupportedMediaType, status.StatusCode);
+            var status = Assert.IsType<UnsupportedMediaTypeResult>(context.Result);
         }
 
         [Fact]

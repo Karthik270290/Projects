@@ -3,12 +3,13 @@
 
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding
 {
     /// <summary>
     /// A filter that scans for <see cref="UnsupportedContentTypeException"/> in the
-    /// <see cref="ActionExecutingContext.ModelState"/> and shortcircuits the pipeline
+    /// <see cref="ActionContext.ModelState"/> and shortcircuits the pipeline
     /// with an Unsupported Media Type (415) response.
     /// </summary>
     public class UnsupportedContentTypeFilter : IActionFilter
@@ -18,7 +19,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         {
             if (HasUnsupportedContentTypeError(context))
             {
-                context.Result = new HttpStatusCodeResult(StatusCodes.Status415UnsupportedMediaType);
+                context.Result = new UnsupportedMediaTypeResult();
             }
         }
 

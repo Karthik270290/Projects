@@ -48,8 +48,11 @@ namespace FiltersWebSite.Controllers
                 var jsonFormatter = options.Value.OutputFormatters.OfType<JsonOutputFormatter>().Single();
 
                 // Update the output formatter collection to only return JSON. 
-                var result = (ObjectResult)context.Result;
-                result.Formatters.Add(jsonFormatter);
+                if (context.Result is ObjectResult)
+                {
+                    var result = (ObjectResult)context.Result;
+                    result.Formatters.Add(jsonFormatter);
+                }
             }
         }
     }

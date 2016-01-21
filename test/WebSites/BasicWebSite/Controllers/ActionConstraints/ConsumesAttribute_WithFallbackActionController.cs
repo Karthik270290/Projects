@@ -10,20 +10,20 @@ namespace BasicWebSite.Controllers.ActionConstraints
     public class ConsumesAttribute_WithFallbackActionController : Controller
     {
         [Consumes("application/json")]
-        public Product CreateProduct([FromBody] Product_Json jsonInput)
+        public IActionResult CreateProduct(Product_Json jsonInput)
         {
-            return jsonInput;
+            return Content("CreateProduct_Product_Json");
         }
 
         [Consumes("application/xml")]
-        public Product CreateProduct([FromBody] Product_Xml xmlInput)
+        public IActionResult CreateProduct(Product_Xml xmlInput)
         {
-            return xmlInput;
+            return Content("CreateProduct_Product_Xml");
         }
 
-        public Product CreateProduct([FromBody] Product_Text defaultInput)
+        public IActionResult CreateProduct(Product_Text defaultInput)
         {
-            return defaultInput;
+            return Content("CreateProduct_Product_Text");
         }
     }
 }
