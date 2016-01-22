@@ -1,10 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,8 +25,6 @@ namespace Microsoft.AspNet.Mvc.WebApiCompatShim
             options.Conventions.Add(new WebApiRoutesApplicationModelConvention(area: DefaultAreaName));
 
             // Add an action filter for handling the HttpResponseException.
-            var filter = options.Filters.FirstOrDefault(f => f is UnsupportedContentTypeFilter);
-            options.Filters.Remove(filter);
             options.Filters.Add(new HttpResponseExceptionActionFilter());
 
             // Add a model binder to be able to bind HttpRequestMessage
