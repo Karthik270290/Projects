@@ -44,12 +44,11 @@ namespace FiltersWebSite.Controllers
 
             public void OnResultExecuting(ResultExecutingContext context)
             {
-                var options = context.HttpContext.RequestServices.GetRequiredService<IOptions<MvcOptions>>();
-                var jsonFormatter = options.Value.OutputFormatters.OfType<JsonOutputFormatter>().Single();
-
                 // Update the output formatter collection to only return JSON. 
                 if (context.Result is ObjectResult)
                 {
+                    var options = context.HttpContext.RequestServices.GetRequiredService<IOptions<MvcOptions>>();
+                    var jsonFormatter = options.Value.OutputFormatters.OfType<JsonOutputFormatter>().Single();
                     var result = (ObjectResult)context.Result;
                     result.Formatters.Add(jsonFormatter);
                 }
