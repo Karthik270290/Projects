@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Core;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Mvc.Internal
@@ -18,25 +20,47 @@ namespace Microsoft.AspNetCore.Mvc.Internal
     /// </summary>
     public class ActionSelector : IActionSelector
     {
-        private readonly IActionSelectorDecisionTreeProvider _decisionTreeProvider;
+        private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
         private readonly ActionConstraintCache _actionConstraintCache;
-        private ILogger _logger;
+        private readonly ILogger _logger;
+
+        private Cache _cache;
 
         /// <summary>
         /// Creates a new <see cref="ActionSelector"/>.
         /// </summary>
-        /// <param name="decisionTreeProvider">The <see cref="IActionSelectorDecisionTreeProvider"/>.</param>
+        /// <param name="actionDescriptorCollectionProvider">
+        /// The <see cref="IActionDescriptorCollectionProvider"/>.
+        /// </param>
         /// <param name="actionConstraintCache">The <see cref="ActionConstraintCache"/> that
         /// providers a set of <see cref="IActionConstraint"/> instances.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
         public ActionSelector(
-            IActionSelectorDecisionTreeProvider decisionTreeProvider,
+            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider,
             ActionConstraintCache actionConstraintCache,
             ILoggerFactory loggerFactory)
         {
-            _decisionTreeProvider = decisionTreeProvider;
+            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _logger = loggerFactory.CreateLogger<ActionSelector>();
             _actionConstraintCache = actionConstraintCache;
+        }
+
+        private Cache Current
+        {
+            get
+            {
+                var actions = _actionDescriptorCollectionProvider.ActionDescriptors;
+                var cache = Volatile.Read(ref _cache);
+
+                if (cache != null && cache.Version == actions.Version)
+                {
+                    return cache;
+                }
+
+                cache = new Cache(actions);
+                _cache = cache;
+                return cache;
+            }
         }
 
         /// <inheritdoc />
@@ -47,8 +71,27 @@ namespace Microsoft.AspNetCore.Mvc.Internal
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var tree = _decisionTreeProvider.DecisionTree;
-            var matchingRouteValues = tree.Select(context.RouteData.Values);
+            var cache = Current;
+            
+            var values = new string[cache.RouteKeys.Length];
+            for (var i = 0; i < cache.RouteKeys.Length; i++)
+            {
+                object value;
+                context.RouteData.Values.TryGetValue(cache.RouteKeys[i], out value);
+
+                if (value != null)
+                {
+                    values[i] = value as string ?? Convert.ToString(value);
+                }
+            }
+
+            var key = new ActionSelectionKey(values);
+            List<ActionDescriptor> matchingRouteValues;
+            if (!cache.Entries.TryGetValue(key, out matchingRouteValues))
+            {
+                _logger.NoActionsMatched();
+                return null;
+            }
 
             var candidates = new List<ActionSelectorCandidate>();
 
@@ -213,6 +256,104 @@ namespace Microsoft.AspNetCore.Mvc.Internal
             else
             {
                 return EvaluateActionConstraints(context, actionsWithoutConstraint, order);
+            }
+        }
+
+        private class Cache
+        {
+            public Cache(ActionDescriptorCollection actions)
+            {
+                Version = actions.Version;
+
+                Entries = new Dictionary<ActionSelectionKey, List<ActionDescriptor>>();
+
+                var routeKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (var i = 0; i < actions.Items.Count; i++)
+                {
+                    var action = actions.Items[i];
+                    foreach (var kvp in action.RouteValues)
+                    {
+                        routeKeys.Add(kvp.Key);
+                    }
+                }
+
+                RouteKeys = routeKeys.ToArray();
+
+                for (var i = 0; i < actions.Items.Count; i++)
+                {
+                    var action = actions.Items[i];
+                    var values = new string[RouteKeys.Length];
+                    for (var j = 0; j < RouteKeys.Length; j++)
+                    {
+                        action.RouteValues.TryGetValue(RouteKeys[j], out values[j]);
+                    }
+
+                    var key = new ActionSelectionKey(values);
+
+                    List<ActionDescriptor> entries;
+                    if (!Entries.TryGetValue(key, out entries))
+                    {
+                        entries = new List<ActionDescriptor>();
+                        Entries.Add(key, entries);
+                    }
+
+                    entries.Add(action);
+                }
+            }
+
+            public int Version { get; set; }
+
+            public string[] RouteKeys { get; set; }
+
+            public Dictionary<ActionSelectionKey, List<ActionDescriptor>> Entries { get; set; }
+        }
+
+        private struct ActionSelectionKey : IEquatable<ActionSelectionKey>
+        {
+            private static readonly RouteValueEqualityComparer _comparer = new RouteValueEqualityComparer();
+
+            private readonly string[] _values;
+
+            public ActionSelectionKey(string[] values)
+            {
+                _values = values;
+            }
+
+            public bool Equals(ActionSelectionKey other)
+            {
+                if (_values.Length != other._values.Length)
+                {
+                    return false;
+                }
+
+                var comparer = _comparer;
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    if (!comparer.Equals(_values[i], other._values[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                var other = obj as ActionSelectionKey?;
+                return other.HasValue ? Equals(other.Value) : false;
+            }
+
+            public override int GetHashCode()
+            {
+                var comparer = _comparer;
+                var hash = new HashCodeCombiner();
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    hash.Add(_values[i].Length);
+                }
+
+                return hash.CombinedHash;
             }
         }
     }
