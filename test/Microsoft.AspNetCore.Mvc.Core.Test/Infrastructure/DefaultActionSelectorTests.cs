@@ -521,7 +521,6 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
 
             var actionDescriptorCollectionProvider = new ActionDescriptorCollectionProvider(
                 serviceContainer.BuildServiceProvider());
-            var decisionTreeProvider = new ActionSelectorDecisionTreeProvider(actionDescriptorCollectionProvider);
 
             var actionConstraintProviders = new[]
             {
@@ -529,7 +528,7 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
             };
 
             var defaultActionSelector = new ActionSelector(
-                decisionTreeProvider,
+                actionDescriptorCollectionProvider,
                 GetActionConstraintCache(actionConstraintProviders),
                 NullLoggerFactory.Instance);
 
@@ -612,9 +611,8 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
             var actionProvider = new Mock<IActionDescriptorCollectionProvider>(MockBehavior.Strict);
 
             actionProvider
-                .Setup(p => p.ActionDescriptors).Returns(new ActionDescriptorCollection(actions, 0));
-
-            var decisionTreeProvider = new ActionSelectorDecisionTreeProvider(actionProvider.Object);
+                .Setup(p => p.ActionDescriptors)
+                .Returns(new ActionDescriptorCollection(actions, 0));
 
             var actionConstraintProviders = new IActionConstraintProvider[] {
                     new DefaultActionConstraintProvider(),
@@ -622,7 +620,7 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
                 };
 
             return new ActionSelector(
-                decisionTreeProvider,
+                actionProvider.Object,
                 GetActionConstraintCache(actionConstraintProviders),
                 loggerFactory);
         }
