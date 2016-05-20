@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Core;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Mvc.Internal
@@ -18,25 +20,47 @@ namespace Microsoft.AspNetCore.Mvc.Internal
     /// </summary>
     public class ActionSelector : IActionSelector
     {
-        private readonly IActionSelectorDecisionTreeProvider _decisionTreeProvider;
+        private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
         private readonly ActionConstraintCache _actionConstraintCache;
-        private ILogger _logger;
+        private readonly ILogger _logger;
+
+        private Cache _cache;
 
         /// <summary>
         /// Creates a new <see cref="ActionSelector"/>.
         /// </summary>
-        /// <param name="decisionTreeProvider">The <see cref="IActionSelectorDecisionTreeProvider"/>.</param>
+        /// <param name="actionDescriptorCollectionProvider">
+        /// The <see cref="IActionDescriptorCollectionProvider"/>.
+        /// </param>
         /// <param name="actionConstraintCache">The <see cref="ActionConstraintCache"/> that
         /// providers a set of <see cref="IActionConstraint"/> instances.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
         public ActionSelector(
-            IActionSelectorDecisionTreeProvider decisionTreeProvider,
+            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider,
             ActionConstraintCache actionConstraintCache,
             ILoggerFactory loggerFactory)
         {
-            _decisionTreeProvider = decisionTreeProvider;
+            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _logger = loggerFactory.CreateLogger<ActionSelector>();
             _actionConstraintCache = actionConstraintCache;
+        }
+
+        private Cache Current
+        {
+            get
+            {
+                var actions = _actionDescriptorCollectionProvider.ActionDescriptors;
+                var cache = Volatile.Read(ref _cache);
+
+                if (cache != null && cache.Version == actions.Version)
+                {
+                    return cache;
+                }
+
+                cache = new Cache(actions);
+                _cache = cache;
+                return cache;
+            }
         }
 
         public IReadOnlyList<ActionDescriptor> SelectCandidates(RouteContext context)
@@ -46,8 +70,34 @@ namespace Microsoft.AspNetCore.Mvc.Internal
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var tree = _decisionTreeProvider.DecisionTree;
-            return tree.Select(context.RouteData.Values);
+            var cache = Current;
+
+            var values = new string[cache.RouteKeys.Length];
+            for (var i = 0; i < cache.RouteKeys.Length; i++)
+            {
+                object value;
+                context.RouteData.Values.TryGetValue(cache.RouteKeys[i], out value);
+
+                if (value != null)
+                {
+                    values[i] = value as string ?? Convert.ToString(value);
+                }
+            }
+
+            var ordinalKey = new ActionSelectionOrdinalKey(values);
+            List<ActionDescriptor> matchingRouteValues;
+            if (!cache.OrdinalEntries.TryGetValue(ordinalKey, out matchingRouteValues))
+            {
+                var ordinalIgnoreCaseKey = new ActionSelectionOrdinalIgnoreCaseKey(values);
+                if (!cache.OrdinalIgnoreCaseEntries.TryGetValue(ordinalIgnoreCaseKey, out matchingRouteValues))
+                {
+
+                    _logger.NoActionsMatched(context.RouteData.Values);
+                    return null;
+                }
+            }
+
+            return matchingRouteValues;
         }
 
         public ActionDescriptor SelectBestCandidate(RouteContext context, IReadOnlyList<ActionDescriptor> candidates)
@@ -232,6 +282,193 @@ namespace Microsoft.AspNetCore.Mvc.Internal
             else
             {
                 return EvaluateActionConstraintsCore(context, actionsWithoutConstraint, order);
+            }
+        }
+
+        private class Cache
+        {
+            public Cache(ActionDescriptorCollection actions)
+            {
+                Version = actions.Version;
+
+                OrdinalEntries = new Dictionary<ActionSelectionOrdinalKey, List<ActionDescriptor>>();
+                OrdinalIgnoreCaseEntries = new Dictionary<ActionSelectionOrdinalIgnoreCaseKey, List<ActionDescriptor>>();
+
+                var routeKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (var i = 0; i < actions.Items.Count; i++)
+                {
+                    var action = actions.Items[i];
+                    foreach (var kvp in action.RouteValues)
+                    {
+                        routeKeys.Add(kvp.Key);
+                    }
+                }
+
+                RouteKeys = routeKeys.ToArray();
+
+                var actionsAndKeys = new ActionAndKeys[actions.Items.Count];
+
+                for (var i = 0; i < actions.Items.Count; i++)
+                {
+                    var action = actions.Items[i];
+                    var values = new string[RouteKeys.Length];
+                    for (var j = 0; j < RouteKeys.Length; j++)
+                    {
+                        string value;
+                        action.RouteValues.TryGetValue(RouteKeys[j], out value);
+
+                        values[j] = value;
+                    }
+
+                    actionsAndKeys[i] = new ActionAndKeys(action, values);
+                    
+                    List<ActionDescriptor> entries;
+                    if (!OrdinalIgnoreCaseEntries.TryGetValue(actionsAndKeys[i].OrdinalIgnoreCaseKey, out entries))
+                    {
+                        entries = new List<ActionDescriptor>();
+                        OrdinalIgnoreCaseEntries.Add(actionsAndKeys[i].OrdinalIgnoreCaseKey, entries);
+                    }
+
+                    entries.Add(action);
+                }
+
+                for (var i = 0; i < actionsAndKeys.Length; i++)
+                {
+                    var actionAndKeys = actionsAndKeys[i];
+
+                    var entries = OrdinalIgnoreCaseEntries[actionAndKeys.OrdinalIgnoreCaseKey];
+                    OrdinalEntries[actionAndKeys.OrdinalKey] = entries;
+                }
+            }
+
+            public int Version { get; set; }
+
+            public string[] RouteKeys { get; set; }
+
+            public Dictionary<ActionSelectionOrdinalKey, List<ActionDescriptor>> OrdinalEntries { get; set; }
+
+            public Dictionary<ActionSelectionOrdinalIgnoreCaseKey, List<ActionDescriptor>> OrdinalIgnoreCaseEntries { get; set; }
+        }
+
+        private struct ActionAndKeys
+        {
+            public ActionAndKeys(ActionDescriptor actionDescriptor, string[] values)
+            {
+                ActionDescriptor = actionDescriptor;
+                OrdinalKey = new ActionSelectionOrdinalKey(values);
+                OrdinalIgnoreCaseKey = new ActionSelectionOrdinalIgnoreCaseKey(values);
+            }
+
+            public ActionDescriptor ActionDescriptor { get; }
+
+            public ActionSelectionOrdinalKey OrdinalKey { get; }
+
+            public ActionSelectionOrdinalIgnoreCaseKey OrdinalIgnoreCaseKey { get; }
+        }
+
+        private struct ActionSelectionOrdinalKey : IEquatable<ActionSelectionOrdinalKey>
+        {
+            private readonly string[] _values;
+
+            public ActionSelectionOrdinalKey(string[] values)
+            {
+                _values = values;
+            }
+
+            public bool Equals(ActionSelectionOrdinalKey other)
+            {
+                if (_values.Length != other._values.Length)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    var x = _values[i];
+                    var y = other._values[i];
+
+                    if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y))
+                    {
+                        continue;
+                    }
+
+                    if (!string.Equals(x, y, StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                var other = obj as ActionSelectionOrdinalKey?;
+                return other.HasValue ? Equals(other.Value) : false;
+            }
+
+            public override int GetHashCode()
+            {
+                var hash = new HashCodeCombiner();
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    hash.Add(_values[i], StringComparer.Ordinal);
+                }
+
+                return hash.CombinedHash;
+            }
+        }
+
+        private struct ActionSelectionOrdinalIgnoreCaseKey : IEquatable<ActionSelectionOrdinalIgnoreCaseKey>
+        {
+            private readonly string[] _values;
+
+            public ActionSelectionOrdinalIgnoreCaseKey(string[] values)
+            {
+                _values = values;
+            }
+
+            public bool Equals(ActionSelectionOrdinalIgnoreCaseKey other)
+            {
+                if (_values.Length != other._values.Length)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    var x = _values[i];
+                    var y = other._values[i];
+
+                    if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y))
+                    {
+                        continue;
+                    }
+
+                    if (!string.Equals(x, y, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                var other = obj as ActionSelectionOrdinalIgnoreCaseKey?;
+                return other.HasValue ? Equals(other.Value) : false;
+            }
+            
+            public override int GetHashCode()
+            {
+                var hash = new HashCodeCombiner();
+                for (var i = 0; i < _values.Length; i++)
+                {
+                    hash.Add(_values[i], StringComparer.OrdinalIgnoreCase);
+                }
+
+                return hash.CombinedHash;
             }
         }
     }
