@@ -5,9 +5,15 @@ using System;
 
 namespace Microsoft.AspNetCore.Mvc.ModelBinding
 {
+    /// <summary>
+    /// Never model bind this class or property.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public sealed class BindNeverAttribute : BindingBehaviorAttribute
     {
+        /// <summary>
+        /// Creates a new instance of <see cref="BindNeverAttribute"/>.
+        /// </summary>
         public BindNeverAttribute()
             : base(BindingBehavior.Never)
         {

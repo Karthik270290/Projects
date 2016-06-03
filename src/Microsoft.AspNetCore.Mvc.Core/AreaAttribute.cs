@@ -6,9 +6,16 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Microsoft.AspNetCore.Mvc
 {
+    /// <summary>
+    /// This attribute adds an 'area' Route Value to it's Controller or Action.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AreaAttribute : RouteValueAttribute
     {
+        /// <summary>
+        /// Creates a new instance of <see cref="AreaAttribute"/>.
+        /// </summary>
+        /// <param name="areaName">The name of the area.</param>
         public AreaAttribute(string areaName)
             : base("area", areaName)
         {

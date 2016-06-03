@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.AspNetCore.Mvc.WebApiCompatShim
 {
+    /// <summary>
+    /// Use WebAPI routing conventions.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class UseWebApiRoutesAttribute : Attribute, IUseWebApiRoutes
     {

@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.AspNetCore.Mvc.WebApiCompatShim
 {
+    /// <summary>
+    /// Indicates this class uses WebAPI Overloading conventions.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class UseWebApiOverloadingAttribute : Attribute, IUseWebApiOverloading
     {

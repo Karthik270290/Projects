@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.AspNetCore.Mvc.WebApiCompatShim
 {
+    /// <summary>
+    /// Indicates that a class should use WebAPI action conventions.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class UseWebApiActionConventionsAttribute : Attribute, IUseWebApiActionConventions
     {

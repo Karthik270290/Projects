@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.AspNetCore.Mvc.WebApiCompatShim
 {
+    /// <summary>
+    /// The class should use WebAPI parameter conventions.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class UseWebApiParameterConventionsAttribute : Attribute, IUseWebApiParameterConventions
     {
