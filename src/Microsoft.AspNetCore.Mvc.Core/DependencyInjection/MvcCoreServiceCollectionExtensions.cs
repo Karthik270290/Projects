@@ -204,8 +204,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.TryAddSingleton<IHttpRequestStreamReaderFactory, MemoryPoolHttpRequestStreamReaderFactory>();
             services.TryAddSingleton<IHttpResponseStreamWriterFactory, MemoryPoolHttpResponseStreamWriterFactory>();
-            services.TryAddSingleton(ArrayPool<byte>.Shared);
-            services.TryAddSingleton(ArrayPool<char>.Shared);
+            services.TryAddSingleton(typeof(ArrayPool<byte>), typeof(WrappedArrayPool<byte>));
+            services.TryAddSingleton(typeof(ArrayPool<char>), typeof(WrappedArrayPool<char>));
             services.TryAddSingleton<ObjectResultExecutor>();
             services.TryAddSingleton<PhysicalFileResultExecutor>();
             services.TryAddSingleton<VirtualFileResultExecutor>();
