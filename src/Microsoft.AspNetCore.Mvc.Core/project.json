@@ -9,7 +9,8 @@
     "tags": [
       "aspnetcore",
       "aspnetcoremvc"
-    ]
+    ],
+    "files": ["build/**/*"]
   },
   "buildOptions": {
     "warningsAsErrors": true,
