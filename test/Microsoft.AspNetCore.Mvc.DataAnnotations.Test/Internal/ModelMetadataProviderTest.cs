@@ -1050,7 +1050,7 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                       new DefaultCompositeMetadataDetailsProvider(new IMetadataDetailsProvider[]
                       {
                           new DefaultBindingMetadataProvider(),
-                          new DataAnnotationsMetadataProvider(stringLocalizerFactory: null),
+                          new DataAnnotationsMetadataProvider(options: null, stringLocalizerFactory: null),
                       }),
                       new TestOptionsManager<MvcOptions>())
             {

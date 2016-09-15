@@ -9,6 +9,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
 {
@@ -22,9 +23,13 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
         IValidationMetadataProvider
     {
         private readonly IStringLocalizerFactory _stringLocalizerFactory;
+        private readonly IOptions<MvcDataAnnotationsLocalizationOptions> _options;
 
-        public DataAnnotationsMetadataProvider(IStringLocalizerFactory stringLocalizerFactory)
+        public DataAnnotationsMetadataProvider(
+            IOptions<MvcDataAnnotationsLocalizationOptions> options,
+            IStringLocalizerFactory stringLocalizerFactory)
         {
+            _options = options;
             _stringLocalizerFactory = stringLocalizerFactory;
         }
 
@@ -90,7 +95,17 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
 
 
             var containerType = context.Key.ContainerType ?? context.Key.ModelType;
-            var localizer = _stringLocalizerFactory?.Create(containerType);
+            IStringLocalizer localizer;
+
+            if (_stringLocalizerFactory != null && _options?.Value?.DataAnnotationLocalizerProvider != null)
+            {
+                localizer = _options.Value.DataAnnotationLocalizerProvider(containerType, _stringLocalizerFactory);
+            }
+            else
+            {
+                localizer = _stringLocalizerFactory?.Create(containerType);
+            }
+
 
             // Description
             if (displayAttribute != null)
