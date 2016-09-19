@@ -23,13 +23,18 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
         IValidationMetadataProvider
     {
         private readonly IStringLocalizerFactory _stringLocalizerFactory;
-        private readonly IOptions<MvcDataAnnotationsLocalizationOptions> _options;
+        private readonly MvcDataAnnotationsLocalizationOptions _localizationOptions;
 
         public DataAnnotationsMetadataProvider(
             IOptions<MvcDataAnnotationsLocalizationOptions> options,
             IStringLocalizerFactory stringLocalizerFactory)
         {
-            _options = options;
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            _localizationOptions = options.Value;
             _stringLocalizerFactory = stringLocalizerFactory;
         }
 
@@ -93,19 +98,12 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                 displayMetadata.DataTypeName = DataType.Html.ToString();
             }
 
-
             var containerType = context.Key.ContainerType ?? context.Key.ModelType;
-            IStringLocalizer localizer;
-
-            if (_stringLocalizerFactory != null && _options?.Value?.DataAnnotationLocalizerProvider != null)
+            IStringLocalizer localizer = null;
+            if (_stringLocalizerFactory != null && _localizationOptions.DataAnnotationLocalizerProvider != null)
             {
-                localizer = _options.Value.DataAnnotationLocalizerProvider(containerType, _stringLocalizerFactory);
+                localizer = _localizationOptions.DataAnnotationLocalizerProvider(containerType, _stringLocalizerFactory);
             }
-            else
-            {
-                localizer = _stringLocalizerFactory?.Create(containerType);
-            }
-
 
             // Description
             if (displayAttribute != null)
