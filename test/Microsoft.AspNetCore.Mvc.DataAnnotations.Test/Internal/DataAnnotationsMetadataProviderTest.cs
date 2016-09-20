@@ -2,12 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.DataAnnotations.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -170,13 +167,10 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
         }
 
         [Fact]
-        public void CreateDisplayMetadata_DisplayAttribute_NameFromResources_UsesDataAnnotationLocalizaterProvider()
+        public void CreateDisplayMetadata_DisplayAttribute_NameFromResources_UsesDataAnnotationLocalizerProvider()
         {
             // Arrange
             var sharedLocalizer = new Mock<IStringLocalizer>(MockBehavior.Loose);
-            sharedLocalizer
-                .Setup(s => s["DisplayName"])
-                .Returns(() => null);
 
             var stringLocalizerFactoryMock = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
             stringLocalizerFactoryMock
@@ -184,8 +178,10 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                 .Returns(() => sharedLocalizer.Object);
 
             var options = new TestOptionsManager<MvcDataAnnotationsLocalizationOptions>();
+            bool dataAnnotationLocalizerProviderWasUsed = false;
             options.Value.DataAnnotationLocalizerProvider = (type, stringLocalizerFactory) =>
             {
+                dataAnnotationLocalizerProviderWasUsed = true;
                 return stringLocalizerFactory.Create(typeof(EmptyClass));
             };
 
@@ -205,8 +201,7 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
             context.DisplayMetadata.DisplayName();
 
             // Assert
-            stringLocalizerFactoryMock.Verify(s => s.Create(typeof(EmptyClass)), Times.Once());
-            sharedLocalizer.Verify(s => s["DisplayName"], Times.Once());
+            Assert.True(dataAnnotationLocalizerProviderWasUsed, "DataAnnotationLocalizerProvider wasn't used by DisplayMetadata");
         }
 
         // This is IMPORTANT. Product code needs to use GetName() instead of .Name. It's easy to regress.
@@ -428,17 +423,20 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                 .Setup(s => s["Model_Prompt"])
                 .Returns(() => new LocalizedString("Model_Prompt", "prompt from localizer " + CultureInfo.CurrentCulture));
 
-            var stringLocalizerFactory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
-            stringLocalizerFactory
+            var stringLocalizerFactoryMock = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
+            stringLocalizerFactoryMock
                 .Setup(f => f.Create(It.IsAny<Type>()))
                 .Returns(stringLocalizer.Object);
 
             var options = new TestOptionsManager<MvcDataAnnotationsLocalizationOptions>();
-            new MvcDataAnnotationsLocalizationOptionsSetup().Configure(options.Value);
+            options.Value.DataAnnotationLocalizerProvider = (type, stringLocalizerFactory) =>
+            {
+                return stringLocalizerFactory.Create(type);
+            };
 
             var provider = new DataAnnotationsMetadataProvider(
                 options,
-                stringLocalizerFactory.Object);
+                stringLocalizerFactoryMock.Object);
 
             var display = new DisplayAttribute()
             {
