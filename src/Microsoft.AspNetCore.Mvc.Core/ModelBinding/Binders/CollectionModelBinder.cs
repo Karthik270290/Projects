@@ -182,8 +182,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                     bindingContext.ValueProvider
                 };
 
-                object boundValue = null;
-
+                // Enter new scope to change ModelMetadata and isolate element binding operations.
                 using (bindingContext.EnterNestedScope(
                     elementMetadata,
                     fieldName: bindingContext.FieldName,
@@ -194,7 +193,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
 
                     if (bindingContext.Result.IsModelSet)
                     {
-                        boundValue = bindingContext.Result.Model;
+                        var boundValue = bindingContext.Result.Model;
                         boundCollection.Add(ModelBindingHelper.CastOrDefault<TElement>(boundValue));
                     }
                 }
@@ -240,13 +239,17 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             foreach (var indexName in indexNames)
             {
                 var fullChildName = ModelNames.CreateIndexModelName(bindingContext.ModelName, indexName);
+                var childName = fullChildName;
+                if (childName.Length != indexName.Length + 2)
+                {
+                    // Was not a top-level collection. Correct the child name.
+                    childName = "[" + indexName + "]";
+                }
 
-                var didBind = false;
-                object boundValue = null;
                 ModelBindingResult? result;
                 using (bindingContext.EnterNestedScope(
                     elementMetadata,
-                    fieldName: indexName,
+                    fieldName: childName,
                     modelName: fullChildName,
                     model: null))
                 {
@@ -254,6 +257,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                     result = bindingContext.Result;
                 }
 
+                var didBind = false;
+                object boundValue = null;
                 if (result != null && result.Value.IsModelSet)
                 {
                     didBind = true;

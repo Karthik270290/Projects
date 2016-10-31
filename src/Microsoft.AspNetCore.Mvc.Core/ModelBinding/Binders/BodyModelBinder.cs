@@ -45,7 +45,10 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
         /// instances for reading the request body.
         /// </param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        public BodyModelBinder(IList<IInputFormatter> formatters, IHttpRequestStreamReaderFactory readerFactory, ILoggerFactory loggerFactory)
+        public BodyModelBinder(
+            IList<IInputFormatter> formatters,
+            IHttpRequestStreamReaderFactory readerFactory,
+            ILoggerFactory loggerFactory)
         {
             if (formatters == null)
             {
@@ -114,6 +117,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             if (formatter == null)
             {
                 _logger?.NoInputFormatterSelected(formatterContext);
+
                 var message = Resources.FormatUnsupportedContentType(httpContext.Request.ContentType);
                 var exception = new UnsupportedContentTypeException(message);
                 bindingContext.ModelState.AddModelError(modelBindingKey, exception, bindingContext.ModelMetadata);
@@ -122,9 +126,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
 
             try
             {
-                var previousCount = bindingContext.ModelState.ErrorCount;
                 var result = await formatter.ReadAsync(formatterContext);
-                var model = result.Model;
 
                 if (result.HasError)
                 {
@@ -132,6 +134,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                     return;
                 }
 
+                var model = result.Model;
                 bindingContext.Result = ModelBindingResult.Success(model);
                 return;
             }
