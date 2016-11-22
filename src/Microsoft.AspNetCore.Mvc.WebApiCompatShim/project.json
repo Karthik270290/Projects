@@ -21,7 +21,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.AspNet.WebApi.Client": "5.2.2",
+    "Microsoft.AspNet.WebApi.Client": "5.2.4-*",
     "Microsoft.AspNetCore.Mvc.Core": {
       "target": "project"
     },
@@ -38,15 +38,10 @@
   "frameworks": {
     "net451": {
       "frameworkAssemblies": {
-        "System.Net.Http": "",
-        "System.Runtime.Serialization": "",
         "System.Xml": ""
       }
     },
     "netstandard1.6": {
-      "imports": [
-        "portable-net451+win8"
-      ],
       "dependencies": {
         "System.Runtime.Serialization.Xml": "4.3.0",
         "System.Xml.XmlSerializer": "4.3.0"
