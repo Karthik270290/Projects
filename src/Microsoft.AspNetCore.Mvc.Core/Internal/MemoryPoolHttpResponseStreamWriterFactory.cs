@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Mvc.Internal
         /// <summary>
         /// The default size of created char buffers.
         /// </summary>
-        public static readonly int DefaultBufferSize = 1024; // 1KB - results in a 4KB byte array for UTF8.
+        public static readonly int DefaultBufferSize = 4096; // 4KB - results in a 16KB byte array for UTF8.
 
         private readonly ArrayPool<byte> _bytePool;
         private readonly ArrayPool<char> _charPool;
