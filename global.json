@@ -2,7 +2,8 @@
   "projects": [
     "src",
     "test/WebSites",
-    "samples"
+    "samples",
+    "/dd/dnx/Universe/HttpAbstractions/src"
   ],
   "sdk": {
     "version": "1.0.0-preview2-1-003180"
