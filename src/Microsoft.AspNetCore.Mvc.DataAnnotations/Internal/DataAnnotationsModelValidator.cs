@@ -69,14 +69,6 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                         typeof(ModelValidationContext)),
                     nameof(validationContext));
             }
-            if (validationContext.MetadataProvider == null)
-            {
-                throw new ArgumentException(
-                    Resources.FormatPropertyOfTypeCannotBeNull(
-                        nameof(validationContext.MetadataProvider),
-                        typeof(ModelValidationContext)),
-                    nameof(validationContext));
-            }
 
             var metadata = validationContext.ModelMetadata;
             var memberName = metadata.PropertyName;

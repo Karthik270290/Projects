@@ -25,14 +25,13 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
     {
         private IDictionary<string, object> _validationAttributes;
 
-        public TestableHtmlGenerator(IModelMetadataProvider metadataProvider)
-            : this(metadataProvider, Mock.Of<IUrlHelper>())
+        public TestableHtmlGenerator()
+            : this(Mock.Of<IUrlHelper>())
         {
         }
 
-        public TestableHtmlGenerator(IModelMetadataProvider metadataProvider, IUrlHelper urlHelper)
+        public TestableHtmlGenerator(IUrlHelper urlHelper)
             : this(
-                  metadataProvider,
                   GetOptions(),
                   urlHelper,
                   validationAttributes: new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase))
@@ -40,7 +39,6 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         }
 
         public TestableHtmlGenerator(
-            IModelMetadataProvider metadataProvider,
             IOptions<MvcViewOptions> options,
             IUrlHelper urlHelper,
             IDictionary<string, object> validationAttributes)
@@ -49,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
                   options,
                   CreateUrlHelperFactory(urlHelper),
                   new HtmlTestEncoder(),
-                  new DefaultValidationHtmlAttributeProvider(options, metadataProvider, new ClientValidatorCache()))
+                  new DefaultValidationHtmlAttributeProvider(options, new ClientValidatorCache()))
         {
             _validationAttributes = validationAttributes;
         }

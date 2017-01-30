@@ -16,7 +16,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
     /// </summary>
     public class DefaultValidationHtmlAttributeProvider : ValidationHtmlAttributeProvider
     {
-        private readonly IModelMetadataProvider _metadataProvider;
         private readonly ClientValidatorCache _clientValidatorCache;
         private readonly IClientModelValidatorProvider _clientModelValidatorProvider;
 
@@ -24,22 +23,15 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// Initializes a new <see cref="DefaultValidationHtmlAttributeProvider"/> instance.
         /// </summary>
         /// <param name="optionsAccessor">The accessor for <see cref="MvcViewOptions"/>.</param>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="clientValidatorCache">The <see cref="ClientValidatorCache"/> that provides
         /// a list of <see cref="IClientModelValidator"/>s.</param>
         public DefaultValidationHtmlAttributeProvider(
             IOptions<MvcViewOptions> optionsAccessor,
-            IModelMetadataProvider metadataProvider,
             ClientValidatorCache clientValidatorCache)
         {
             if (optionsAccessor == null)
             {
                 throw new ArgumentNullException(nameof(optionsAccessor));
-            }
-
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
             }
 
             if (clientValidatorCache == null)
@@ -48,7 +40,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             _clientValidatorCache = clientValidatorCache;
-            _metadataProvider = metadataProvider;
 
             var clientValidatorProviders = optionsAccessor.Value.ClientModelValidatorProviders;
             _clientModelValidatorProvider = new CompositeClientModelValidatorProvider(clientValidatorProviders);
@@ -89,7 +80,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 var validationContext = new ClientModelValidationContext(
                     viewContext,
                     modelExplorer.Metadata,
-                    _metadataProvider,
                     attributes);
 
                 for (var i = 0; i < validators.Count; i++)

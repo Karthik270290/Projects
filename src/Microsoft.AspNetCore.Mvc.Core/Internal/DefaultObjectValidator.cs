@@ -58,7 +58,6 @@ namespace Microsoft.AspNetCore.Mvc.Internal
                 actionContext,
                 _validatorProvider,
                 _validatorCache,
-                _modelMetadataProvider,
                 validationState);
 
             var metadata = model == null ? null : _modelMetadataProvider.GetMetadataForType(model.GetType());

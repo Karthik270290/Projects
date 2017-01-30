@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Mvc.DataAnnotations.Internal
                 var otherPropertyDisplayName = attribute.OtherPropertyDisplayName;
                 if (otherPropertyDisplayName == null && validationContext.ModelMetadata.ContainerType != null)
                 {
-                    var otherProperty = validationContext.MetadataProvider.GetMetadataForProperty(
+                    var otherProperty = validationContext.ModelMetadata.GetMetadataForProperty(
                         validationContext.ModelMetadata.ContainerType,
                         attribute.OtherProperty);
                     if (otherProperty != null)

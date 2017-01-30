@@ -15,11 +15,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         /// </summary>
         /// <param name="actionContext">The <see cref="ActionContext"/> for this context.</param>
         /// <param name="modelMetadata">The <see cref="ModelMetadata"/> for this model.</param>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/> to be used by this context.</param>
-        public ModelValidationContextBase(
-            ActionContext actionContext,
-            ModelMetadata modelMetadata,
-            IModelMetadataProvider metadataProvider)
+        public ModelValidationContextBase(ActionContext actionContext, ModelMetadata modelMetadata)
         {
             if (actionContext == null)
             {
@@ -31,14 +27,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
                 throw new ArgumentNullException(nameof(modelMetadata));
             }
 
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
-            }
-
             ActionContext = actionContext;
             ModelMetadata = modelMetadata;
-            MetadataProvider = metadataProvider;
         }
 
         /// <summary>
@@ -50,10 +40,5 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         /// Gets the <see cref="ModelBinding.ModelMetadata"/>.
         /// </summary>
         public ModelMetadata ModelMetadata { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IModelMetadataProvider"/>.
-        /// </summary>
-        public IModelMetadataProvider MetadataProvider { get; }
     }
 }

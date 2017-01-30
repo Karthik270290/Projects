@@ -918,20 +918,9 @@ namespace Microsoft.AspNetCore.Mvc
                 .Setup(f => f.GetUrlHelper(actionContext))
                 .Returns(urlHelper);
 
-            var metadata = _metadata;
-            if (metadataProvider == null)
-            {
-                metadataProvider = _metadataProvider;
-            }
-            else
-            {
-                metadata = metadataProvider.GetMetadataForProperty(typeof(string), nameof(string.Length));
-            }
-
             return new ClientModelValidationContext(
                 actionContext,
-                metadata,
-                metadataProvider,
+                _metadata,
                 new AttributeDictionary());
         }
 
@@ -973,7 +962,6 @@ namespace Microsoft.AspNetCore.Mvc
             return new ClientModelValidationContext(
                  actionContext,
                  _metadata,
-                 _metadataProvider,
                  new AttributeDictionary());
         }
 

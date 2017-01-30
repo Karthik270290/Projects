@@ -13,16 +13,14 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         /// </summary>
         /// <param name="actionContext">The <see cref="ActionContext"/> for validation.</param>
         /// <param name="modelMetadata">The <see cref="ModelMetadata"/> for validation.</param>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/> to be used in validation.</param>
         /// <param name="container">The model container.</param>
         /// <param name="model">The model to be validated.</param>
         public ModelValidationContext(
             ActionContext actionContext,
             ModelMetadata modelMetadata,
-            IModelMetadataProvider metadataProvider,
             object container,
             object model)
-            : base(actionContext, modelMetadata, metadataProvider)
+            : base(actionContext, modelMetadata)
         {
             Container = container;
             Model = model;

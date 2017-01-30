@@ -56,7 +56,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             urlHelper
                 .Setup(mock => mock.Action(It.IsAny<UrlActionContext>())).Returns("home/index");
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider, urlHelper.Object);
+            var htmlGenerator = new TestableHtmlGenerator(urlHelper.Object);
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,

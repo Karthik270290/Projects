@@ -16,7 +16,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
     public class ValidationVisitor
     {
         private readonly IModelValidatorProvider _validatorProvider;
-        private readonly IModelMetadataProvider _metadataProvider;
         private readonly ValidatorCache _validatorCache;
         private readonly ActionContext _actionContext;
         private readonly ModelStateDictionary _modelState;
@@ -36,13 +35,11 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         /// <param name="actionContext">The <see cref="ActionContext"/> associated with the current request.</param>
         /// <param name="validatorProvider">The <see cref="IModelValidatorProvider"/>.</param>
         /// <param name="validatorCache">The <see cref="ValidatorCache"/> that provides a list of <see cref="IModelValidator"/>s.</param>
-        /// <param name="metadataProvider">The provider used for reading metadata for the model type.</param>
         /// <param name="validationState">The <see cref="ValidationStateDictionary"/>.</param>
         public ValidationVisitor(
             ActionContext actionContext,
             IModelValidatorProvider validatorProvider,
             ValidatorCache validatorCache,
-            IModelMetadataProvider metadataProvider,
             ValidationStateDictionary validationState)
         {
             if (actionContext == null)
@@ -64,7 +61,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
             _validatorProvider = validatorProvider;
             _validatorCache = validatorCache;
 
-            _metadataProvider = metadataProvider;
             _validationState = validationState;
 
             _modelState = actionContext.ModelState;
@@ -114,7 +110,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
                     var context = new ModelValidationContext(
                         _actionContext,
                         _metadata,
-                        _metadataProvider,
                         _container,
                         _model);
 

@@ -15,14 +15,12 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         /// </summary>
         /// <param name="actionContext">The <see cref="ActionContext"/> for validation.</param>
         /// <param name="metadata">The <see cref="ModelMetadata"/> for validation.</param>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/> to be used in validation.</param>
         /// <param name="attributes">The attributes dictionary for the HTML tag being rendered.</param>
         public ClientModelValidationContext(
             ActionContext actionContext,
             ModelMetadata metadata,
-            IModelMetadataProvider metadataProvider,
             IDictionary<string, string> attributes)
-            : base(actionContext, metadata, metadataProvider)
+            : base(actionContext, metadata)
         {
             Attributes = attributes;
         }
