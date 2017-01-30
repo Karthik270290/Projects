@@ -108,7 +108,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             var propertyMetadata = metadataProvider.GetMetadataForProperty(containerType, "Text");
             var modelExplorer = containerExplorer.GetExplorerForExpression(propertyMetadata, model);
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider)
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {

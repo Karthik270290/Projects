@@ -29,11 +29,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         string IdAttributeDotReplacement { get; }
 
         /// <summary>
-        /// Gets the metadata provider. Intended for use in <see cref="IHtmlHelper"/> extension methods.
-        /// </summary>
-        IModelMetadataProvider MetadataProvider { get; }
-
-        /// <summary>
         /// Gets the view bag.
         /// </summary>
         dynamic ViewBag { get; }

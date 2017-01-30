@@ -221,7 +221,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.Content.SetContent(expectedContent);
             output.PostContent.SetContent(originalPostContent);
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider)
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {
@@ -310,7 +310,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.Content.AppendHtml(expectedContent);
             output.PostContent.AppendHtml(originalPostContent);
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider)
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {
@@ -401,7 +401,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.PostContent.AppendHtml(originalPostContent);
 
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,
@@ -488,7 +488,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.Content.AppendHtml(expectedContent);
             output.PostContent.AppendHtml(originalPostContent);
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider)
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {

@@ -371,8 +371,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         public async Task ProcessAsync_ThrowsIfHrefConflictsWithBoundAttributes(string propertyName)
         {
             // Arrange
-            var metadataProvider = new EmptyModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var anchorTagHelper = new AnchorTagHelper(htmlGenerator);
 
@@ -416,8 +415,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         public async Task ProcessAsync_ThrowsIfRouteAndActionOrControllerProvided(string propertyName)
         {
             // Arrange
-            var metadataProvider = new EmptyModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var anchorTagHelper = new AnchorTagHelper(htmlGenerator)
             {

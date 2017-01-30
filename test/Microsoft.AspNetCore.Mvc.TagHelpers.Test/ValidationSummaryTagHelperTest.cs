@@ -48,7 +48,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             // Arrange
             var expectedTagName = "not-div";
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var expectedAttributes = new TagHelperAttributeList
             {
                 new TagHelperAttribute("class", "form-control validation-summary-valid"),
@@ -103,7 +103,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         {
             // Arrange
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var viewContext = CreateViewContext();
             viewContext.ClientValidationEnabled = false;
 
@@ -170,7 +170,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         {
             // Arrange
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var viewContext = CreateViewContext();
             viewContext.ViewData.TemplateInfo.HtmlFieldPrefix = prefix;
 
@@ -211,7 +211,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             var expectedError = "I am an error.";
             var expectedTagName = "not-div";
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var validationSummaryTagHelper = new ValidationSummaryTagHelper(htmlGenerator)
             {
@@ -281,7 +281,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             };
 
             var metadataProvider = new TestModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var validationSummaryTagHelper = new ValidationSummaryTagHelper(htmlGenerator)
             {
                 ValidationSummary = ValidationSummary.All,
@@ -566,7 +566,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             ValidationSummary validationSummary)
         {
             // Arrange
-            var generator = new TestableHtmlGenerator(new EmptyModelMetadataProvider());
+            var generator = new TestableHtmlGenerator();
 
             var validationSummaryTagHelper = new ValidationSummaryTagHelper(generator);
             var validationTypeName = typeof(ValidationSummary).FullName;

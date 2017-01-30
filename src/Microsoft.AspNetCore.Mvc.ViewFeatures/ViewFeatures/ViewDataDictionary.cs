@@ -231,7 +231,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             {
                 // The existing metadata is compatible with the value and declared type but it's a new value.
                 ModelExplorer = new ModelExplorer(
-                    _metadataProvider,
                     source.ModelExplorer.Container,
                     source.ModelMetadata,
                     model);
@@ -482,7 +481,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             else
             {
                 // The existing metadata is compatible with the value but it's a new value.
-                ModelExplorer = new ModelExplorer(_metadataProvider, ModelExplorer.Container, ModelMetadata, value);
+                ModelExplorer = new ModelExplorer(ModelExplorer.Container, ModelMetadata, value);
             }
 
             EnsureCompatible(value);

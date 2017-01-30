@@ -23,7 +23,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         public HtmlHelper(
             IHtmlGenerator htmlGenerator,
             ICompositeViewEngine viewEngine,
-            IModelMetadataProvider metadataProvider,
             IViewBufferScope bufferScope,
             HtmlEncoder htmlEncoder,
             UrlEncoder urlEncoder,
@@ -31,7 +30,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             : base(
                   htmlGenerator,
                   viewEngine,
-                  metadataProvider,
                   bufferScope,
                   htmlEncoder,
                   urlEncoder)

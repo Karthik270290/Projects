@@ -100,7 +100,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
                 TagMode = TagMode.SelfClosing,
             };
             output.Content.AppendHtml(originalContent);
-            var htmlGenerator = new TestableHtmlGenerator(new EmptyModelMetadataProvider());
+            var htmlGenerator = new TestableHtmlGenerator();
             var tagHelper = GetTagHelper(htmlGenerator, model: false, propertyName: nameof(Model.IsACar));
 
             // Act
@@ -218,7 +218,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.Content.SetContent(expectedContent);
             output.PostContent.SetContent(expectedPostContent);
 
-            var htmlGenerator = new TestableHtmlGenerator(new EmptyModelMetadataProvider())
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {
@@ -287,7 +287,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
                 TagMode = TagMode.StartTagOnly,
             };
 
-            var htmlGenerator = new TestableHtmlGenerator(new EmptyModelMetadataProvider())
+            var htmlGenerator = new TestableHtmlGenerator()
             {
                 ValidationAttributes =
                 {

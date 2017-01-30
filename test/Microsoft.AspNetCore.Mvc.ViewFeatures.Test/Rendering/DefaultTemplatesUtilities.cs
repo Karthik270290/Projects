@@ -81,7 +81,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 new ViewDataDictionary<ObjectTemplateModel>(metadataProvider),
                 CreateUrlHelper(),
                 CreateViewEngine(),
-                metadataProvider,
                 innerHelperWrapper: null,
                 htmlGenerator: htmlGenerator,
                 idAttributeDotReplacement: null);
@@ -93,7 +92,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 viewData,
                 CreateUrlHelper(),
                 CreateViewEngine(),
-                TestModelMetadataProvider.CreateDefaultProvider(),
                 innerHelperWrapper: null,
                 htmlGenerator: null,
                 idAttributeDotReplacement: null);
@@ -107,7 +105,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 viewData,
                 CreateUrlHelper(),
                 CreateViewEngine(),
-                TestModelMetadataProvider.CreateDefaultProvider(),
                 innerHelperWrapper: null,
                 htmlGenerator: null,
                 idAttributeDotReplacement: idAttributeDotReplacement);
@@ -128,7 +125,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 viewData,
                 CreateUrlHelper(),
                 CreateViewEngine(),
-                provider,
                 innerHelperWrapper: null,
                 htmlGenerator: null,
                 idAttributeDotReplacement: idAttributeDotReplacement);
@@ -208,7 +204,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 viewData,
                 urlHelper,
                 viewEngine,
-                provider,
                 innerHelperWrapper,
                 htmlGenerator: null,
                 idAttributeDotReplacement: null);
@@ -218,7 +213,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             ViewDataDictionary<TModel> viewData,
             IUrlHelper urlHelper,
             ICompositeViewEngine viewEngine,
-            IModelMetadataProvider provider,
             Func<IHtmlHelper, IHtmlHelper> innerHelperWrapper,
             IHtmlGenerator htmlGenerator,
             string idAttributeDotReplacement)
@@ -255,7 +249,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             {
                 var attributeProvider = new DefaultValidationHtmlAttributeProvider(
                     optionsAccessor.Object,
-                    provider,
                     new ClientValidatorCache());
                 htmlGenerator = new DefaultHtmlGenerator(
                     Mock.Of<IAntiforgery>(),
@@ -269,7 +262,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             var innerHelper = (IHtmlHelper)new HtmlHelper(
                 htmlGenerator,
                 viewEngine,
-                provider,
                 new TestViewBufferScope(),
                 new HtmlTestEncoder(),
                 UrlEncoder.Default);
@@ -292,7 +284,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             var htmlHelper = new HtmlHelper<TModel>(
                 htmlGenerator,
                 viewEngine,
-                provider,
                 new TestViewBufferScope(),
                 new HtmlTestEncoder(),
                 UrlEncoder.Default,

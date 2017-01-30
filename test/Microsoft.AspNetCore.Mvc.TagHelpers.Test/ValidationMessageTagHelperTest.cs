@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             var expectedTagName = "not-span";
             var metadataProvider = new TestModelMetadataProvider();
             var modelExpression = CreateModelExpression("Name");
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var validationMessageTagHelper = new ValidationMessageTagHelper(htmlGenerator)
             {

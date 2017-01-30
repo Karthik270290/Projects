@@ -421,7 +421,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.Content.SetContent(originalContent);
 
             var metadataProvider = new EmptyModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,
@@ -492,7 +492,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.PostContent.SetContent(originalPostContent);
 
             var metadataProvider = new EmptyModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,
@@ -556,7 +556,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             output.PostContent.SetContent(originalPostContent);
 
             var metadataProvider = new EmptyModelMetadataProvider();
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var tagHelper = new OptionTagHelper(htmlGenerator)
             {

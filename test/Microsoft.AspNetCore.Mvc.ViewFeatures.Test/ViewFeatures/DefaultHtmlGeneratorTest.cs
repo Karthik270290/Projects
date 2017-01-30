@@ -693,7 +693,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 
             var attributeProvider = new DefaultValidationHtmlAttributeProvider(
                 mvcViewOptionsAccessor.Object,
-                metadataProvider,
                 new ClientValidatorCache());
 
             return new DefaultHtmlGenerator(

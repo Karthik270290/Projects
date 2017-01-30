@@ -61,7 +61,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             urlHelper
                 .Setup(mock => mock.Action(It.IsAny<UrlActionContext>())).Returns("home/index");
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider, urlHelper.Object);
+            var htmlGenerator = new TestableHtmlGenerator(urlHelper.Object);
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,
@@ -320,7 +320,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             urlHelper
                 .Setup(mock => mock.Action(It.IsAny<UrlActionContext>())).Returns("home/index");
 
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider, urlHelper.Object);
+            var htmlGenerator = new TestableHtmlGenerator(urlHelper.Object);
             var viewContext = TestableHtmlGenerator.GetViewContext(
                 model: null,
                 htmlGenerator: htmlGenerator,
@@ -632,7 +632,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         public async Task ProcessAsync_ThrowsIfActionConflictsWithBoundAttributes(string propertyName)
         {
             // Arrange
-            var formTagHelper = new FormTagHelper(new TestableHtmlGenerator(new EmptyModelMetadataProvider()));
+            var formTagHelper = new FormTagHelper(new TestableHtmlGenerator());
             var tagHelperOutput = new TagHelperOutput(
                 "form",
                 attributes: new TagHelperAttributeList
@@ -672,7 +672,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
         public async Task ProcessAsync_ThrowsIfRouteAndActionOrControllerProvided(string propertyName)
         {
             // Arrange
-            var formTagHelper = new FormTagHelper(new TestableHtmlGenerator(new EmptyModelMetadataProvider()))
+            var formTagHelper = new FormTagHelper(new TestableHtmlGenerator())
             {
                 Route = "Default",
             };

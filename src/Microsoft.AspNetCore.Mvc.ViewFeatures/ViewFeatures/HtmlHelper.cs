@@ -42,7 +42,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         public HtmlHelper(
             IHtmlGenerator htmlGenerator,
             ICompositeViewEngine viewEngine,
-            IModelMetadataProvider metadataProvider,
             IViewBufferScope bufferScope,
             HtmlEncoder htmlEncoder,
             UrlEncoder urlEncoder)
@@ -55,11 +54,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             if (viewEngine == null)
             {
                 throw new ArgumentNullException(nameof(viewEngine));
-            }
-
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
             }
 
             if (bufferScope == null)
@@ -81,7 +75,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             _htmlGenerator = htmlGenerator;
             _htmlEncoder = htmlEncoder;
             _bufferScope = bufferScope;
-            MetadataProvider = metadataProvider;
             UrlEncoder = urlEncoder;
         }
 
@@ -154,9 +147,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 
         /// <inheritdoc />
         public UrlEncoder UrlEncoder { get; }
-
-        /// <inheritdoc />
-        public IModelMetadataProvider MetadataProvider { get; }
 
         /// <summary>
         /// Creates a dictionary from an object, by adding each public instance property as a key with its associated
@@ -409,7 +399,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         public IEnumerable<SelectListItem> GetEnumSelectList<TEnum>() where TEnum : struct
         {
             var type = typeof(TEnum);
-            var metadata = MetadataProvider.GetMetadataForType(type);
+            var metadata = ViewData.ModelMetadata.GetMetadataForType(type);
             if (!metadata.IsEnum || metadata.IsFlagsEnum)
             {
                 var message = Resources.FormatHtmlHelper_TypeNotSupported_ForGetEnumSelectList(
@@ -430,7 +420,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(enumType));
             }
 
-            var metadata = MetadataProvider.GetMetadataForType(enumType);
+            var metadata = ViewData.ModelMetadata.GetMetadataForType(enumType);
             if (!metadata.IsEnum || metadata.IsFlagsEnum)
             {
                 var message = Resources.FormatHtmlHelper_TypeNotSupported_ForGetEnumSelectList(
@@ -706,7 +696,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 // We do this because thought we're displaying something as a string, we want to have
                 // the right set of validation attributes.
                 modelExplorer = new ModelExplorer(
-                    MetadataProvider,
                     modelExplorer.Container,
                     modelExplorer.Metadata,
                     value);

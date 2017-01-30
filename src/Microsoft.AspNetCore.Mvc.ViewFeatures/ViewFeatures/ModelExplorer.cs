@@ -15,8 +15,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
     [DebuggerDisplay("DeclaredType={Metadata.ModelType.Name} PropertyName={Metadata.PropertyName}")]
     public class ModelExplorer
     {
-        private readonly IModelMetadataProvider _metadataProvider;
-
         private object _model;
         private Func<object, object> _modelAccessor;
         private ModelExplorer[] _properties;
@@ -24,25 +22,17 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <summary>
         /// Creates a new <see cref="ModelExplorer"/>.
         /// </summary>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="metadata">The <see cref="ModelMetadata"/>.</param>
         /// <param name="model">The model object. May be <c>null</c>.</param>
         public ModelExplorer(
-            IModelMetadataProvider metadataProvider,
             ModelMetadata metadata,
             object model)
         {
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
-            }
-
             if (metadata == null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            _metadataProvider = metadataProvider;
             Metadata = metadata;
             _model = model;
         }
@@ -50,33 +40,20 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <summary>
         /// Creates a new <see cref="ModelExplorer"/>.
         /// </summary>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="container">The container <see cref="ModelExplorer"/>.</param>
         /// <param name="metadata">The <see cref="ModelMetadata"/>.</param>
         /// <param name="modelAccessor">A model accessor function..</param>
         public ModelExplorer(
-            IModelMetadataProvider metadataProvider,
             ModelExplorer container,
             ModelMetadata metadata,
             Func<object, object> modelAccessor)
         {
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
-            }
-
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
             if (metadata == null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            _metadataProvider = metadataProvider;
-            Container = container;
+           Container = container;
             Metadata = metadata;
             _modelAccessor = modelAccessor;
         }
@@ -84,27 +61,19 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <summary>
         /// Creates a new <see cref="ModelExplorer"/>.
         /// </summary>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="container">The container <see cref="ModelExplorer"/>.</param>
         /// <param name="metadata">The <see cref="ModelMetadata"/>.</param>
         /// <param name="model">The model object. May be <c>null</c>.</param>
         public ModelExplorer(
-            IModelMetadataProvider metadataProvider,
             ModelExplorer container,
             ModelMetadata metadata,
             object model)
         {
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
-            }
-
             if (metadata == null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            _metadataProvider = metadataProvider;
             Container = container;
             Metadata = metadata;
             _model = model;
@@ -244,11 +213,11 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         {
             if (Container == null)
             {
-                return new ModelExplorer(_metadataProvider, Metadata, model);
+                return new ModelExplorer(Metadata, model);
             }
             else
             {
-                return new ModelExplorer(_metadataProvider, Container, Metadata, model);
+                return new ModelExplorer(Container, Metadata, model);
             }
         }
 
@@ -302,7 +271,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 return null;
             }
 
-            return new ModelExplorer(_metadataProvider, this, propertyMetadata, modelAccessor);
+            return new ModelExplorer(this, propertyMetadata, modelAccessor);
         }
 
         /// <summary>
@@ -330,7 +299,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 return null;
             }
 
-            return new ModelExplorer(_metadataProvider, this, propertyMetadata, model);
+            return new ModelExplorer(this, propertyMetadata, model);
         }
 
         /// <summary>
@@ -356,7 +325,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(modelType));
             }
 
-            var metadata = _metadataProvider.GetMetadataForType(modelType);
+            var metadata = Metadata.GetMetadataForType(modelType);
             return GetExplorerForExpression(metadata, model);
         }
 
@@ -384,7 +353,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            return new ModelExplorer(_metadataProvider, this, metadata, model);
+            return new ModelExplorer(this, metadata, model);
         }
 
         /// <summary>
@@ -411,7 +380,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(modelType));
             }
 
-            var metadata = _metadataProvider.GetMetadataForType(modelType);
+            var metadata = Metadata.GetMetadataForType(modelType);
             return GetExplorerForExpression(metadata, modelAccessor);
         }
 
@@ -439,7 +408,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(metadata));
             }
 
-            return new ModelExplorer(_metadataProvider, this, metadata, modelAccessor);
+            return new ModelExplorer(this, metadata, modelAccessor);
         }
 
         private ModelMetadata GetMetadataForRuntimeType()
@@ -449,7 +418,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             var metadata = Metadata;
             if (Metadata.ModelType != ModelType)
             {
-                metadata = _metadataProvider.GetMetadataForType(ModelType);
+                metadata = Metadata.GetMetadataForType(ModelType);
             }
 
             return metadata;
@@ -461,7 +430,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         {
             if (propertyHelper == null)
             {
-                return new ModelExplorer(_metadataProvider, this, propertyMetadata, modelAccessor: null);
+                return new ModelExplorer(this, propertyMetadata, modelAccessor: null);
             }
 
             var modelAccessor = new Func<object, object>((c) =>
@@ -469,7 +438,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 return c == null ? null : propertyHelper.GetValue(c);
             });
 
-            return new ModelExplorer(_metadataProvider, this, propertyMetadata, modelAccessor);
+            return new ModelExplorer(this, propertyMetadata, modelAccessor);
         }
     }
 }

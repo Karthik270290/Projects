@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             // Arrange
             var expectedMessage = $"The field {nameof(Model.HasValidatorsProperty)} must be a number.";
             var metadataProvider = new EmptyModelMetadataProvider();
-            var attributeProvider = GetAttributeProvider(metadataProvider);
+            var attributeProvider = GetAttributeProvider();
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
             var attributes = new SortedDictionary<string, string>(StringComparer.Ordinal);
             var modelExplorer = metadataProvider
@@ -63,7 +63,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             // Arrange
             var expectedMessage = $"The field {nameof(Model.HasValidatorsProperty)} must be a number.";
             var metadataProvider = new EmptyModelMetadataProvider();
-            var attributeProvider = GetAttributeProvider(metadataProvider);
+            var attributeProvider = GetAttributeProvider();
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
             var attributes = new SortedDictionary<string, string>(StringComparer.Ordinal);
             var modelExplorer = metadataProvider
@@ -97,7 +97,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         {
             // Arrange
             var metadataProvider = new EmptyModelMetadataProvider();
-            var attributeProvider = GetAttributeProvider(metadataProvider);
+            var attributeProvider = GetAttributeProvider();
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
             viewContext.ClientValidationEnabled = false;
 
@@ -161,7 +161,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             // Arrange
             var expectedMessage = $"The field {nameof(Model.HasValidatorsProperty)} must be a number.";
             var metadataProvider = new EmptyModelMetadataProvider();
-            var attributeProvider = GetAttributeProvider(metadataProvider);
+            var attributeProvider = GetAttributeProvider();
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
             viewContext.FormContext.RenderedField(nameof(Model.HasValidatorsProperty), value: true);
 
@@ -235,7 +235,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         {
             // Arrange
             var metadataProvider = new EmptyModelMetadataProvider();
-            var attributeProvider = GetAttributeProvider(metadataProvider);
+            var attributeProvider = GetAttributeProvider();
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
             var attributes = new SortedDictionary<string, string>(StringComparer.Ordinal);
             var modelExplorer = metadataProvider
@@ -269,7 +269,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 new HtmlHelperOptions());
         }
 
-        private static ValidationHtmlAttributeProvider GetAttributeProvider(IModelMetadataProvider metadataProvider)
+        private static ValidationHtmlAttributeProvider GetAttributeProvider()
         {
             // Add validation properties for float, double and decimal properties. Ignore everything else.
             var mvcViewOptions = new MvcViewOptions();
@@ -280,7 +280,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 
             return new DefaultValidationHtmlAttributeProvider(
                 mvcViewOptionsAccessor.Object,
-                metadataProvider,
                 new ClientValidatorCache());
         }
 

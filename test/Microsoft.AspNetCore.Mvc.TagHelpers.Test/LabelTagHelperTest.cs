@@ -179,7 +179,7 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
 
             var propertyMetadata = metadataProvider.GetMetadataForProperty(containerType, "Text");
             var modelExplorer = containerExplorer.GetExplorerForExpression(propertyMetadata, modelAccessor());
-            var htmlGenerator = new TestableHtmlGenerator(metadataProvider);
+            var htmlGenerator = new TestableHtmlGenerator();
 
             var modelExpression = new ModelExpression(propertyPath, modelExplorer);
             var tagHelper = new LabelTagHelper(htmlGenerator)
