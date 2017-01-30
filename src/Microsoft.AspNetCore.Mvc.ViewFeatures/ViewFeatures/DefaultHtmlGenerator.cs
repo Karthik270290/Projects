@@ -31,7 +31,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             new[] { "text", "search", "url", "tel", "email", "password", "number" };
 
         private readonly IAntiforgery _antiforgery;
-        private readonly IModelMetadataProvider _metadataProvider;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ValidationHtmlAttributeProvider _validationAttributeProvider;
@@ -42,14 +41,12 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <param name="antiforgery">The <see cref="IAntiforgery"/> instance which is used to generate antiforgery
         /// tokens.</param>
         /// <param name="optionsAccessor">The accessor for <see cref="MvcViewOptions"/>.</param>
-        /// <param name="metadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="urlHelperFactory">The <see cref="IUrlHelperFactory"/>.</param>
         /// <param name="htmlEncoder">The <see cref="HtmlEncoder"/>.</param>
         /// <param name="validationAttributeProvider">The <see cref="ValidationHtmlAttributeProvider"/>.</param>
         public DefaultHtmlGenerator(
             IAntiforgery antiforgery,
             IOptions<MvcViewOptions> optionsAccessor,
-            IModelMetadataProvider metadataProvider,
             IUrlHelperFactory urlHelperFactory,
             HtmlEncoder htmlEncoder,
             ValidationHtmlAttributeProvider validationAttributeProvider)
@@ -62,11 +59,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             if (optionsAccessor == null)
             {
                 throw new ArgumentNullException(nameof(optionsAccessor));
-            }
-
-            if (metadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(metadataProvider));
             }
 
             if (urlHelperFactory == null)
@@ -85,7 +77,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             _antiforgery = antiforgery;
-            _metadataProvider = metadataProvider;
             _urlHelperFactory = urlHelperFactory;
             _htmlEncoder = htmlEncoder;
             _validationAttributeProvider = validationAttributeProvider;
@@ -572,7 +563,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             modelExplorer = modelExplorer ??
-                ExpressionMetadataProvider.FromStringExpression(expression, viewContext.ViewData, _metadataProvider);
+                ExpressionMetadataProvider.FromStringExpression(expression, viewContext.ViewData);
 
             // Convert each ListItem to an <option> tag and wrap them with <optgroup> if requested.
             var listItemBuilder = GenerateGroupsAndOptions(optionLabel, selectList, currentValues);
@@ -787,8 +778,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             {
                 modelExplorer = modelExplorer ?? ExpressionMetadataProvider.FromStringExpression(
                     expression,
-                    viewContext.ViewData,
-                    _metadataProvider);
+                    viewContext.ViewData);
                 tagBuilder.InnerHtml.SetContent(
                     ValidationHelpers.GetModelErrorMessageOrDefault(modelError, entry, modelExplorer));
             }
@@ -979,7 +969,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             modelExplorer = modelExplorer ??
-                ExpressionMetadataProvider.FromStringExpression(expression, viewContext.ViewData, _metadataProvider);
+                ExpressionMetadataProvider.FromStringExpression(expression, viewContext.ViewData);
             var metadata = modelExplorer.Metadata;
             if (allowMultiple && metadata.IsEnumerableType)
             {
@@ -1313,10 +1303,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             ModelExplorer modelExplorer,
             string expression)
         {
-            modelExplorer = modelExplorer ?? ExpressionMetadataProvider.FromStringExpression(
-                expression,
-                viewData,
-                _metadataProvider);
+            modelExplorer = modelExplorer ?? ExpressionMetadataProvider.FromStringExpression(expression, viewData);
 
             var placeholder = modelExplorer.Metadata.Placeholder;
             if (!string.IsNullOrEmpty(placeholder))
@@ -1341,8 +1328,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         {
             modelExplorer = modelExplorer ?? ExpressionMetadataProvider.FromStringExpression(
                 expression,
-                viewContext.ViewData,
-                _metadataProvider);
+                viewContext.ViewData);
 
             _validationAttributeProvider.AddAndTrackValidationAttributes(
                 viewContext,

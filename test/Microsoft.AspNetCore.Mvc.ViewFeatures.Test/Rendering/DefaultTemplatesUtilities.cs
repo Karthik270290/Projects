@@ -260,7 +260,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 htmlGenerator = new DefaultHtmlGenerator(
                     Mock.Of<IAntiforgery>(),
                     optionsAccessor.Object,
-                    provider,
                     urlHelperFactory.Object,
                     new HtmlTestEncoder(),
                     attributeProvider);

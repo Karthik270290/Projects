@@ -699,7 +699,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             return new DefaultHtmlGenerator(
                 antiforgery.Object,
                 mvcViewOptionsAccessor.Object,
-                metadataProvider,
                 new UrlHelperFactory(),
                 htmlEncoder,
                 attributeProvider);

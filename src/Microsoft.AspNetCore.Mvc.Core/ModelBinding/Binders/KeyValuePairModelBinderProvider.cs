@@ -26,10 +26,10 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             {
                 var typeArguments = modelTypeInfo.GenericTypeArguments;
 
-                var keyMetadata = context.MetadataProvider.GetMetadataForType(typeArguments[0]);
+                var keyMetadata = context.Metadata.GetMetadataForType(typeArguments[0]);
                 var keyBinder = context.CreateBinder(keyMetadata);
 
-                var valueMetadata = context.MetadataProvider.GetMetadataForType(typeArguments[1]);
+                var valueMetadata = context.Metadata.GetMetadataForType(typeArguments[1]);
                 var valueBinder = context.CreateBinder(valueMetadata);
 
                 var binderType = typeof(KeyValuePairModelBinder<,>).MakeGenericType(typeArguments);

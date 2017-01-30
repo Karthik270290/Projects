@@ -351,7 +351,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             string htmlFieldName,
             object additionalViewData)
         {
-            var metadata = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var metadata = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
 
             return GenerateDisplay(
                 metadata,
@@ -363,14 +363,14 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <inheritdoc />
         public string DisplayName(string expression)
         {
-            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
             return GenerateDisplayName(modelExplorer, expression);
         }
 
         /// <inheritdoc />
         public string DisplayText(string expression)
         {
-            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
             return GenerateDisplayText(modelExplorer);
         }
 
@@ -396,7 +396,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             string htmlFieldName,
             object additionalViewData)
         {
-            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
 
             return GenerateEditor(
                 modelExplorer,
@@ -463,7 +463,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <inheritdoc />
         public IHtmlContent Label(string expression, string labelText, object htmlAttributes)
         {
-            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
             return GenerateLabel(
                 modelExplorer,
                 expression,
@@ -696,7 +696,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         /// <inheritdoc />
         public IHtmlContent TextArea(string expression, string value, int rows, int columns, object htmlAttributes)
         {
-            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, ViewData);
             if (value != null)
             {
                 // As a special case we allow treating a string value as a model of arbitrary type.

@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.False(modelMetadata.IsComplexType);
@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.True(modelMetadata.IsComplexType);
@@ -110,7 +110,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.False(modelMetadata.IsCollectionType);
@@ -124,7 +124,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.True(modelMetadata.IsCollectionType);
@@ -138,7 +138,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.False(modelMetadata.IsEnumerableType);
@@ -155,7 +155,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var provider = new EmptyModelMetadataProvider();
 
             // Act
-            var modelMetadata = new TestModelMetadata(type);
+            var modelMetadata = new TestModelMetadata(type, provider);
 
             // Assert
             Assert.True(modelMetadata.IsEnumerableType);
@@ -174,7 +174,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public void IsNullableValueType_ReturnsExpectedValue(Type modelType, bool expected)
         {
             // Arrange
-            var modelMetadata = new TestModelMetadata(modelType);
+            var provider = new EmptyModelMetadataProvider();
+            var modelMetadata = new TestModelMetadata(modelType, provider);
 
             // Act & Assert
             Assert.Equal(expected, modelMetadata.IsNullableValueType);
@@ -193,7 +194,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public void IsReferenceOrNullableType_ReturnsExpectedValue(Type modelType, bool expected)
         {
             // Arrange
-            var modelMetadata = new TestModelMetadata(modelType);
+            var provider = new EmptyModelMetadataProvider();
+            var modelMetadata = new TestModelMetadata(modelType, provider);
 
             // Act & Assert
             Assert.Equal(expected, modelMetadata.IsReferenceOrNullableType);
@@ -212,7 +214,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public void UnderlyingOrModelType_ReturnsExpectedValue(Type modelType, Type expected)
         {
             // Arrange
-            var modelMetadata = new TestModelMetadata(modelType);
+            var provider = new EmptyModelMetadataProvider();
+            var modelMetadata = new TestModelMetadata(modelType, provider);
 
             // Act & Assert
             Assert.Equal(expected, modelMetadata.UnderlyingOrModelType);
@@ -226,7 +229,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public void ElementType_ReturnsNull_ForNonCollections(Type modelType)
         {
             // Arrange
-            var metadata = new TestModelMetadata(modelType);
+            var provider = new EmptyModelMetadataProvider();
+            var metadata = new TestModelMetadata(modelType, provider);
 
             // Act
             var elementType = metadata.ElementType;
@@ -247,7 +251,8 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public void ElementType_ReturnsExpectedMetadata(Type modelType, Type expected)
         {
             // Arrange
-            var metadata = new TestModelMetadata(modelType);
+            var provider = new EmptyModelMetadataProvider();
+            var metadata = new TestModelMetadata(modelType, provider);
 
             // Act
             var elementType = metadata.ElementType;
@@ -264,7 +269,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         {
             // Arrange
             var provider = new EmptyModelMetadataProvider();
-            var metadata = new TestModelMetadata(typeof(int), "Length", typeof(string));
+            var metadata = new TestModelMetadata(typeof(int), "Length", typeof(string), provider);
             metadata.SetDisplayName("displayName");
 
             // Act
@@ -279,7 +284,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         {
             // Arrange
             var provider = new EmptyModelMetadataProvider();
-            var metadata = new TestModelMetadata(typeof(int), "Length", typeof(string));
+            var metadata = new TestModelMetadata(typeof(int), "Length", typeof(string), provider);
 
             // Act
             var result = metadata.GetDisplayName();
@@ -293,7 +298,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         {
             // Arrange
             var provider = new EmptyModelMetadataProvider();
-            var metadata = new TestModelMetadata(typeof(string));
+            var metadata = new TestModelMetadata(typeof(string), provider);
 
             // Act
             var result = metadata.GetDisplayName();
@@ -306,13 +311,13 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         {
             private string _displayName;
 
-            public TestModelMetadata(Type modelType)
-                : base(ModelMetadataIdentity.ForType(modelType))
+            public TestModelMetadata(Type modelType, IModelMetadataProvider metadataProvider)
+                : base(ModelMetadataIdentity.ForType(modelType), metadataProvider)
             {
             }
 
-            public TestModelMetadata(Type modelType, string propertyName, Type containerType)
-                : base(ModelMetadataIdentity.ForProperty(modelType, propertyName, containerType))
+            public TestModelMetadata(Type modelType, string propertyName, Type containerType, IModelMetadataProvider metadataProvider)
+                : base(ModelMetadataIdentity.ForProperty(modelType, propertyName, containerType), metadataProvider)
             {
             }
 

@@ -17,7 +17,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public TestModelBinderProviderContext(Type modelType)
         {
             Metadata = CachedMetadataProvider.GetMetadataForType(modelType);
-            MetadataProvider = CachedMetadataProvider;
             BindingInfo = new BindingInfo()
             {
                 BinderModelName = Metadata.BinderModelName,
@@ -38,15 +37,11 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                 BindingSource = metadata.BindingSource,
                 PropertyFilterProvider = metadata.PropertyFilterProvider,
             };
-
-            MetadataProvider = CachedMetadataProvider;
         }
 
         public override BindingInfo BindingInfo { get; }
 
         public override ModelMetadata Metadata { get; }
-
-        public override IModelMetadataProvider MetadataProvider { get; }
 
         public override IModelBinder CreateBinder(ModelMetadata metadata)
         {

@@ -209,11 +209,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
 
         private static IModelExpressionProvider CreateModelExpressionProvider()
         {
-            var provider = new TestModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(
-                provider,
-                new ExpressionTextCache());
-
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             return modelExpressionProvider;
         }
 

@@ -31,8 +31,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         public void Activate_ActivatesAndContextualizesPropertiesOnViews()
         {
             // Arrange
-            var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var urlHelperFactory = new UrlHelperFactory();
             var jsonHelper = new JsonHelper(
                 new JsonOutputFormatter(new JsonSerializerSettings(), ArrayPool<char>.Shared),
@@ -92,7 +91,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),
@@ -133,7 +132,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),
@@ -183,7 +182,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),
@@ -232,7 +231,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),
@@ -278,7 +277,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),
@@ -316,7 +315,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             // Arrange
             var modelMetadataProvider = new EmptyModelMetadataProvider();
-            var modelExpressionProvider = new ModelExpressionProvider(modelMetadataProvider, new ExpressionTextCache());
+            var modelExpressionProvider = new ModelExpressionProvider(new ExpressionTextCache());
             var activator = new RazorPageActivator(
                 modelMetadataProvider,
                 new UrlHelperFactory(),

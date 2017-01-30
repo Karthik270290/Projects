@@ -24,10 +24,5 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         /// Gets the <see cref="ModelMetadata"/>.
         /// </summary>
         public abstract ModelMetadata Metadata { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IModelMetadataProvider"/>.
-        /// </summary>
-        public abstract IModelMetadataProvider MetadataProvider { get; }
     }
 }

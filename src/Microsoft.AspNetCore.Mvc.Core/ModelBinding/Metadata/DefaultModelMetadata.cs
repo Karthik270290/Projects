@@ -57,7 +57,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
             ICompositeMetadataDetailsProvider detailsProvider,
             DefaultMetadataDetails details,
             ModelBindingMessageProvider modelBindingMessageProvider)
-            : base(details.Key)
+            : base(details.Key, provider)
         {
             if (provider == null)
             {

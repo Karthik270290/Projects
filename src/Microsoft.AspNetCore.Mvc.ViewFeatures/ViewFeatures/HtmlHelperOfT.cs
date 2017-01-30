@@ -158,8 +158,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 
             var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression<TModelItem, TResult>(
                 expression,
-                new ViewDataDictionary<TModelItem>(ViewData, model: null),
-                MetadataProvider);
+                new ViewDataDictionary<TModelItem>(ViewData, model: null));
 
             var expressionText = ExpressionHelper.GetExpressionText(expression, _expressionTextCache);
             if (modelExplorer == null)
@@ -372,7 +371,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             var modelExplorer =
-                ExpressionMetadataProvider.FromLambdaExpression(expression, ViewData, MetadataProvider);
+                ExpressionMetadataProvider.FromLambdaExpression(expression, ViewData);
             if (modelExplorer == null)
             {
                 var expressionName = GetExpressionName(expression);

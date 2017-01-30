@@ -26,9 +26,9 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             var bind = new BindAttribute(new string[] { "UserName", "FirstName", "LastName, MiddleName,  ,foo,bar " });
 
             var context = new DefaultModelBindingContext();
-
+            var metadataProvider = new EmptyModelMetadataProvider();
             var identity = ModelMetadataIdentity.ForProperty(typeof(int), property, typeof(string));
-            context.ModelMetadata = new Mock<ModelMetadata>(identity).Object;
+            context.ModelMetadata = new Mock<ModelMetadata>(identity, metadataProvider).Object;   
 
             // Act
             var propertyFilter = bind.PropertyFilter;

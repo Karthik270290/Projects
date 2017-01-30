@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             var viewData = new ViewDataDictionary<TestModel>(provider);
 
             // Act
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m, viewData, provider);
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m, viewData);
 
             // Assert
             Assert.NotNull(explorer);
@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             var viewData = new ViewDataDictionary<TestModel>(provider);
 
             // Act
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m.SelectedCategory, viewData, provider);
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m.SelectedCategory, viewData);
 
             // Assert
             Assert.NotNull(explorer);
@@ -54,7 +54,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             var viewData = new ViewDataDictionary<TestModel[]>(provider);
 
             // Act
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m[23], viewData, provider);
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(m => m[23], viewData);
 
             // Assert
             Assert.NotNull(explorer);
@@ -75,8 +75,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             // Act
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(
                 m => m[index].SelectedCategory.CategoryId,
-                viewData,
-                provider);
+                viewData);
 
             // Assert
             Assert.NotNull(explorer);
@@ -98,8 +97,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             // Act
             var metadata = ExpressionMetadataProvider.FromLambdaExpression<TestModel, Category>(
                 model => model.SelectedCategory,
-                viewData,
-                provider);
+                viewData);
 
             // Assert
             Assert.Same(myModel, metadata.Container.Model);
@@ -120,7 +118,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
             var viewData = new ViewDataDictionary<TestModel>(provider);
 
             // Act
-            var explorer = ExpressionMetadataProvider.FromStringExpression(expression, viewData, provider);
+            var explorer = ExpressionMetadataProvider.FromStringExpression(expression, viewData);
 
             // Assert
             Assert.NotNull(explorer);
@@ -141,8 +139,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures.Internal
 
             // Act
             var metadata = ExpressionMetadataProvider.FromStringExpression("Object.SelectedCategory",
-                                                                           viewData,
-                                                                           provider);
+                                                                           viewData);
 
             // Assert
             Assert.Same(myModel, metadata.Container.Model);

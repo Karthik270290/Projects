@@ -34,7 +34,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             if (collectionType != null)
             {
                 var elementType = collectionType.GenericTypeArguments[0];
-                var elementBinder = context.CreateBinder(context.MetadataProvider.GetMetadataForType(elementType));
+                var elementBinder = context.CreateBinder(context.Metadata.GetMetadataForType(elementType));
 
                 var binderType = typeof(CollectionModelBinder<>).MakeGenericType(collectionType.GenericTypeArguments);
                 return (IModelBinder)Activator.CreateInstance(binderType, elementBinder);
@@ -50,7 +50,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
                 if (modelType.GetTypeInfo().IsAssignableFrom(listType.GetTypeInfo()))
                 {
                     var elementType = enumerableType.GenericTypeArguments[0];
-                    var elementBinder = context.CreateBinder(context.MetadataProvider.GetMetadataForType(elementType));
+                    var elementBinder = context.CreateBinder(context.Metadata.GetMetadataForType(elementType));
 
                     var binderType = typeof(CollectionModelBinder<>).MakeGenericType(enumerableType.GenericTypeArguments);
                     return (IModelBinder)Activator.CreateInstance(binderType, elementBinder);

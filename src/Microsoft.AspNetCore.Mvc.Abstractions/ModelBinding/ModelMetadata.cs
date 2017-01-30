@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
     /// A metadata representation of a model type, property or parameter.
     /// </summary>
     [DebuggerDisplay("{DebuggerToString(),nq}")]
-    public abstract class ModelMetadata : IEquatable<ModelMetadata>
+    public abstract class ModelMetadata : IEquatable<ModelMetadata>, IModelMetadataProvider
     {
         /// <summary>
         /// The default value of <see cref="ModelMetadata.Order"/>.
@@ -25,14 +25,17 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
         public static readonly int DefaultOrder = 10000;
 
         private int? _hashCode;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
 
         /// <summary>
         /// Creates a new <see cref="ModelMetadata"/>.
         /// </summary>
         /// <param name="identity">The <see cref="ModelMetadataIdentity"/>.</param>
-        protected ModelMetadata(ModelMetadataIdentity identity)
+        /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/> which created this metadata instance.</param>
+        protected ModelMetadata(ModelMetadataIdentity identity, IModelMetadataProvider modelMetadataProvider)
         {
             Identity = identity;
+            _modelMetadataProvider = modelMetadataProvider;
 
             InitializeTypeInformation();
         }
@@ -473,6 +476,18 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             {
                 return $"ModelMetadata (Property: '{ContainerType.Name}.{PropertyName}' Type: '{ModelType.Name}')";
             }
+        }
+
+        /// <inheritdoc />
+        public ModelMetadata GetMetadataForType(Type modelType)
+        {
+            return _modelMetadataProvider.GetMetadataForType(modelType);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<ModelMetadata> GetMetadataForProperties(Type modelType)
+        {
+            return _modelMetadataProvider.GetMetadataForProperties(modelType);
         }
     }
 }

@@ -25,10 +25,10 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Binders
             if (dictionaryType != null)
             {
                 var keyType = dictionaryType.GenericTypeArguments[0];
-                var keyBinder = context.CreateBinder(context.MetadataProvider.GetMetadataForType(keyType));
+                var keyBinder = context.CreateBinder(context.Metadata.GetMetadataForType(keyType));
 
                 var valueType = dictionaryType.GenericTypeArguments[1];
-                var valueBinder = context.CreateBinder(context.MetadataProvider.GetMetadataForType(valueType));
+                var valueBinder = context.CreateBinder(context.Metadata.GetMetadataForType(valueType));
 
                 var binderType = typeof(DictionaryModelBinder<,>).MakeGenericType(dictionaryType.GenericTypeArguments);
                 return (IModelBinder)Activator.CreateInstance(binderType, keyBinder, valueBinder);

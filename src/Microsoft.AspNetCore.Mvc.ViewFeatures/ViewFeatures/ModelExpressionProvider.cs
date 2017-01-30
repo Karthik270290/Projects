@@ -9,33 +9,23 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 {
     /// <summary>
-    /// A default implementation of <see cref="IModelMetadataProvider"/>.
+    /// A default implementation of <see cref="IModelExpressionProvider"/>.
     /// </summary>
     public class ModelExpressionProvider : IModelExpressionProvider
     {
-        private readonly IModelMetadataProvider _modelMetadataProvider;
         private readonly ExpressionTextCache _expressionTextCache;
 
         /// <summary>
         /// Creates a  new <see cref="ModelExpressionProvider"/>.
         /// </summary>
-        /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
         /// <param name="expressionTextCache">The <see cref="ExpressionTextCache"/>.</param>
-        public ModelExpressionProvider(
-            IModelMetadataProvider modelMetadataProvider,
-            ExpressionTextCache expressionTextCache)
+        public ModelExpressionProvider(ExpressionTextCache expressionTextCache)
         {
-            if (modelMetadataProvider == null)
-            {
-                throw new ArgumentNullException(nameof(modelMetadataProvider));
-            }
-
             if (expressionTextCache == null)
             {
                 throw new ArgumentNullException(nameof(expressionTextCache));
             }
 
-            _modelMetadataProvider = modelMetadataProvider;
             _expressionTextCache = expressionTextCache;
         }
 
@@ -55,7 +45,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             var name = ExpressionHelper.GetExpressionText(expression, _expressionTextCache);
-            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, viewData, _modelMetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, viewData);
             if (modelExplorer == null)
             {
                 throw new InvalidOperationException(

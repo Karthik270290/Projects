@@ -47,7 +47,6 @@ namespace Microsoft.AspNetCore.Mvc.TagHelpers
             : base(
                   Mock.Of<IAntiforgery>(),
                   options,
-                  metadataProvider,
                   CreateUrlHelperFactory(urlHelper),
                   new HtmlTestEncoder(),
                   new DefaultValidationHtmlAttributeProvider(options, metadataProvider, new ClientValidatorCache()))

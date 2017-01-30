@@ -214,7 +214,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                         factoryContext.BindingInfo?.PropertyFilterProvider ?? Metadata.PropertyFilterProvider,
                 };
 
-                MetadataProvider = _factory._metadataProvider;
                 Visited = new Dictionary<Key, IModelBinder>();
             }
 
@@ -225,7 +224,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
                 Metadata = metadata;
 
                 _factory = parent._factory;
-                MetadataProvider = parent.MetadataProvider;
                 Visited = parent.Visited;
 
                 BindingInfo = new BindingInfo()
@@ -240,8 +238,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding
             public override BindingInfo BindingInfo { get; }
 
             public override ModelMetadata Metadata { get; }
-
-            public override IModelMetadataProvider MetadataProvider { get; }
 
             public Dictionary<Key, IModelBinder> Visited { get; }
 
