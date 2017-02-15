@@ -1,0 +1,10 @@
+Source Location: (13:0,13 [4] testfiles/input/basic.cshtml)
+|logo|
+Generated Location: (590:16,16 [4] )
+|logo|
+
+Source Location: (43:2,5 [21] testfiles/input/basic.cshtml)
+|Html.Input("SomeKey")|
+Generated Location: (676:21,8 [21] )
+|Html.Input("SomeKey")|
+

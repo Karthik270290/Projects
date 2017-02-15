@@ -1,0 +1,10 @@
+Source Location: (28:1,8 [5] testfiles/input/inject.cshtml)
+|MyApp|
+Generated Location: (364:11,0 [5] )
+|MyApp|
+
+Source Location: (34:1,14 [14] testfiles/input/inject.cshtml)
+|MyPropertyName|
+Generated Location: (466:15,14 [14] )
+|MyPropertyName|
+

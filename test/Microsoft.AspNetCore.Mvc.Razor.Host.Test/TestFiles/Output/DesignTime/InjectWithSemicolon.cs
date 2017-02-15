@@ -1,72 +1,63 @@
 namespace AspNetCore
 {
+    #line hidden
+    using System;
     using System.Threading.Tasks;
-
-    public class testfiles_input_injectwithsemicolon_cshtml : Microsoft.AspNetCore.Mvc.Razor.RazorPage<MyModel>
+    public class testfiles_input_injectwithsemicolon_cshtml : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<MyModel>
     {
-        private static object @__o;
-        private void @__RazorDesignTimeHelpers__()
-        {
-            #pragma warning disable 219
-#line 1 "testfiles/input/injectwithsemicolon.cshtml"
-var __modelHelper = default(MyModel);
-
-#line default
-#line hidden
-            #pragma warning restore 219
+        #pragma warning disable 219
+        private void __RazorDirectiveTokenHelpers__() {
+        ((System.Action)(() => {
+MyModel __typeHelper = null;
         }
-        #line hidden
-        public testfiles_input_injectwithsemicolon_cshtml()
-        {
+        ))();
+        ((System.Action)(() => {
+MyApp __typeHelper = null;
         }
-        #line hidden
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public
-#line 2 "testfiles/input/injectwithsemicolon.cshtml"
-        MyApp MyPropertyName
-
-#line default
-#line hidden
-        { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public
-#line 3 "testfiles/input/injectwithsemicolon.cshtml"
-        MyService<MyModel> Html
-
-#line default
-#line hidden
-        { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public
-#line 4 "testfiles/input/injectwithsemicolon.cshtml"
-        MyApp MyPropertyName2
-
-#line default
-#line hidden
-        { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public
-#line 5 "testfiles/input/injectwithsemicolon.cshtml"
-        MyService<MyModel> Html2
-
-#line default
-#line hidden
-        { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
-
-        #line hidden
-
+        ))();
+        ((System.Action)(() => {
+System.Object MyPropertyName = null;
+        }
+        ))();
+        ((System.Action)(() => {
+MyService<TModel> __typeHelper = null;
+        }
+        ))();
+        ((System.Action)(() => {
+System.Object Html = null;
+        }
+        ))();
+        ((System.Action)(() => {
+MyApp __typeHelper = null;
+        }
+        ))();
+        ((System.Action)(() => {
+System.Object MyPropertyName2 = null;
+        }
+        ))();
+        ((System.Action)(() => {
+MyService<TModel> __typeHelper = null;
+        }
+        ))();
+        ((System.Action)(() => {
+System.Object Html2 = null;
+        }
+        ))();
+        }
+        #pragma warning restore 219
+        private static System.Object __o = null;
         #pragma warning disable 1998
-        public override async Task ExecuteAsync()
+        public async override global::System.Threading.Tasks.Task ExecuteAsync()
         {
         }
         #pragma warning restore 1998
+        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
+public MyService<MyModel> Html2 { get; private set; }
+        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
+public MyApp MyPropertyName2 { get; private set; }
+        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
+public MyService<MyModel> Html { get; private set; }
+        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
+public MyApp MyPropertyName { get; private set; }
     }
 }

@@ -1,43 +1,25 @@
 namespace AspNetCore
 {
+    #line hidden
+    using System;
     using System.Threading.Tasks;
-
-    public class testfiles_input_basic_cshtml : Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
+    public class testfiles_input_basic_cshtml : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
     {
-        private static object @__o;
-        private void @__RazorDesignTimeHelpers__()
-        {
-            #pragma warning disable 219
-            #pragma warning restore 219
+        #pragma warning disable 219
+        private void __RazorDirectiveTokenHelpers__() {
         }
-        #line hidden
-        public testfiles_input_basic_cshtml()
-        {
-        }
-        #line hidden
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
-        [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; }
-
-        #line hidden
-
+        #pragma warning restore 219
+        private static System.Object __o = null;
         #pragma warning disable 1998
-        public override async Task ExecuteAsync()
+        public async override global::System.Threading.Tasks.Task ExecuteAsync()
         {
 #line 1 "testfiles/input/basic.cshtml"
-       __o = logo;
+          __o = logo;
 
 #line default
 #line hidden
 #line 3 "testfiles/input/basic.cshtml"
-__o = Html.Input("SomeKey");
+  __o = Html.Input("SomeKey");
 
 #line default
 #line hidden

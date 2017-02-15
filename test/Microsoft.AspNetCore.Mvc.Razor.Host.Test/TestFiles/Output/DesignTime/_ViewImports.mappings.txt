@@ -1,0 +1,10 @@
+Source Location: (8:0,8 [19] testfiles/input/_viewimports.cshtml)
+|IHtmlHelper<TModel>|
+Generated Location: (346:10,0 [19] )
+|IHtmlHelper<TModel>|
+
+Source Location: (28:0,28 [5] testfiles/input/_viewimports.cshtml)
+|Model|
+Generated Location: (462:14,14 [5] )
+|Model|
+
