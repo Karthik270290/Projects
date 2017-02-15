@@ -24,7 +24,6 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Internal
     public class PageActionInvokerProvider : IActionInvokerProvider
     {
         private const string PageStartFileName = "_PageStart.cshtml";
-        private const string ModelPropertyName = "Model";
         private readonly IPageLoader _loader;
         private readonly IPageFactoryProvider _pageFactoryProvider;
         private readonly IPageModelFactoryProvider _modelFactoryProvider;
@@ -166,34 +165,20 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Internal
             FilterItem[] cachedFilters)
         {
             var actionDescriptor = (PageActionDescriptor)context.ActionContext.ActionDescriptor;
-            var compiledType = _loader.Load(actionDescriptor).GetTypeInfo();
-
-            // If a model type wasn't set in code then the model property's type will be the same
-            // as the compiled type.
-            var modelType = compiledType.GetProperty(ModelPropertyName)?.PropertyType.GetTypeInfo();
-            if (modelType == compiledType)
-            {
-                modelType = null;
-            }
-
-            var compiledActionDescriptor = new CompiledPageActionDescriptor(actionDescriptor)
-            {
-                ModelTypeInfo = modelType,
-                PageTypeInfo = compiledType,
-            };
+            var compiledActionDescriptor = _loader.Load(actionDescriptor);
 
             var pageFactory = _pageFactoryProvider.CreatePageFactory(compiledActionDescriptor);
             var pageDisposer = _pageFactoryProvider.CreatePageDisposer(compiledActionDescriptor);
 
             Func<PageContext, object> modelFactory = null;
             Action<PageContext, object> modelReleaser = null;
-            if (modelType == null)
+            if (compiledActionDescriptor.ModelTypeInfo == null)
             {
-                PopulateHandlerMethodDescriptors(compiledType, compiledActionDescriptor);
+                PopulateHandlerMethodDescriptors(compiledActionDescriptor.PageTypeInfo, compiledActionDescriptor);
             }
             else
             {
-                PopulateHandlerMethodDescriptors(modelType, compiledActionDescriptor);
+                PopulateHandlerMethodDescriptors(compiledActionDescriptor.ModelTypeInfo, compiledActionDescriptor);
 
                 modelFactory = _modelFactoryProvider.CreateModelFactory(compiledActionDescriptor);
                 modelReleaser = _modelFactoryProvider.CreateModelDisposer(compiledActionDescriptor);
