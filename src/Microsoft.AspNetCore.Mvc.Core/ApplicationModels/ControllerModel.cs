@@ -17,6 +17,9 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
     [DebuggerDisplay("Name={ControllerName}, Type={ControllerType.Name}")]
     public class ControllerModel : ICommonModel, IFilterModel, IApiExplorerModel
     {
+        private IList<PropertyModel> _controllerProperties = null;
+        private readonly Lazy<List<PropertyModel>> _controllerPropertiesFactory = null;
+
         public ControllerModel(
             TypeInfo controllerType,
             IReadOnlyList<object> attributes)
@@ -40,6 +43,8 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
             Properties = new Dictionary<object, object>();
             RouteValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             Selectors = new List<SelectorModel>();
+
+            _controllerPropertiesFactory = new Lazy<List<PropertyModel>>(() => CreateProperties(controllerType.AsType(), this));
         }
 
         public ControllerModel(ControllerModel other)
@@ -95,26 +100,14 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
 
         public TypeInfo ControllerType { get; }
 
-        private IList<PropertyModel> _controllerProperties = null;
         public IList<PropertyModel> ControllerProperties
         {
             get
             {
                 if (_controllerProperties == null)
                 {
-                    _controllerProperties = new List<PropertyModel>();
-                    foreach (var propertyHelper in PropertyHelper.GetProperties(ControllerType.AsType()))
-                    {
-                        var propertyInfo = propertyHelper.Property;
-                        var propertyModel = CreatePropertyModel(propertyInfo);
-                        if (propertyModel != null)
-                        {
-                            propertyModel.Controller = this;
-                            _controllerProperties.Add(propertyModel);
-                        }
-                    }
+                    _controllerProperties = _controllerPropertiesFactory.Value;
                 }
-
                 return _controllerProperties;
             }
             private set
@@ -147,12 +140,23 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
 
         public IList<SelectorModel> Selectors { get; }
 
-        /// <summary>
-        /// Creates a <see cref="PropertyModel"/> for the given <see cref="PropertyInfo"/>.
-        /// </summary>
-        /// <param name="propertyInfo">The <see cref="PropertyInfo"/>.</param>
-        /// <returns>A <see cref="PropertyModel"/> for the given <see cref="PropertyInfo"/>.</returns>
-        private PropertyModel CreatePropertyModel(PropertyInfo propertyInfo)
+        private static List<PropertyModel> CreateProperties(Type controllerType, ControllerModel controller)
+        {
+            var properties = new List<PropertyModel>();
+            foreach (var propertyHelper in PropertyHelper.GetProperties(controllerType))
+            {
+                var propertyInfo = propertyHelper.Property;
+                var propertyModel = CreatePropertyModel(propertyInfo);
+                if (propertyModel != null)
+                {
+                    propertyModel.Controller = controller;
+                    properties.Add(propertyModel);
+                }
+            }
+            return properties;
+        }
+
+        private static PropertyModel CreatePropertyModel(PropertyInfo propertyInfo)
         {
             if (propertyInfo == null)
             {
