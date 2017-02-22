@@ -58,16 +58,16 @@ namespace Microsoft.AspNetCore.Mvc.Internal
                 context.Result.Controllers.Add(controllerModel);
                 controllerModel.Application = context.Result;
 
-                foreach (var propertyHelper in PropertyHelper.GetProperties(controllerType.AsType()))
-                {
-                    var propertyInfo = propertyHelper.Property;
-                    var propertyModel = CreatePropertyModel(propertyInfo);
-                    if (propertyModel != null)
-                    {
-                        propertyModel.Controller = controllerModel;
-                        controllerModel.ControllerProperties.Add(propertyModel);
-                    }
-                }
+                //foreach (var propertyHelper in PropertyHelper.GetProperties(controllerType.AsType()))
+                //{
+                //    var propertyInfo = propertyHelper.Property;
+                //    var propertyModel = CreatePropertyModel(propertyInfo);
+                //    if (propertyModel != null)
+                //    {
+                //        propertyModel.Controller = controllerModel;
+                //        controllerModel.ControllerProperties.Add(propertyModel);
+                //    }
+                //}
 
                 foreach (var methodInfo in controllerType.AsType().GetMethods())
                 {

@@ -7,8 +7,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.ApplicationModels
 {
@@ -34,7 +36,6 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
             Actions = new List<ActionModel>();
             ApiExplorer = new ApiExplorerModel();
             Attributes = new List<object>(attributes);
-            ControllerProperties = new List<PropertyModel>();
             Filters = new List<IFilterMetadata>();
             Properties = new Dictionary<object, object>();
             RouteValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -94,7 +95,33 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
 
         public TypeInfo ControllerType { get; }
 
-        public IList<PropertyModel> ControllerProperties { get; }
+        private IList<PropertyModel> _controllerProperties = null;
+        public IList<PropertyModel> ControllerProperties
+        {
+            get
+            {
+                if (_controllerProperties == null)
+                {
+                    _controllerProperties = new List<PropertyModel>();
+                    foreach (var propertyHelper in PropertyHelper.GetProperties(ControllerType.AsType()))
+                    {
+                        var propertyInfo = propertyHelper.Property;
+                        var propertyModel = CreatePropertyModel(propertyInfo);
+                        if (propertyModel != null)
+                        {
+                            propertyModel.Controller = this;
+                            _controllerProperties.Add(propertyModel);
+                        }
+                    }
+                }
+
+                return _controllerProperties;
+            }
+            private set
+            {
+                _controllerProperties = value;
+            }
+        }
 
         public IList<IFilterMetadata> Filters { get; }
 
@@ -119,5 +146,29 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         public IDictionary<object, object> Properties { get; }
 
         public IList<SelectorModel> Selectors { get; }
+
+        /// <summary>
+        /// Creates a <see cref="PropertyModel"/> for the given <see cref="PropertyInfo"/>.
+        /// </summary>
+        /// <param name="propertyInfo">The <see cref="PropertyInfo"/>.</param>
+        /// <returns>A <see cref="PropertyModel"/> for the given <see cref="PropertyInfo"/>.</returns>
+        private PropertyModel CreatePropertyModel(PropertyInfo propertyInfo)
+        {
+            if (propertyInfo == null)
+            {
+                throw new ArgumentNullException(nameof(propertyInfo));
+            }
+
+            // CoreCLR returns IEnumerable<Attribute> from GetCustomAttributes - the OfType<object>
+            // is needed to so that the result of ToArray() is object
+            var attributes = propertyInfo.GetCustomAttributes(inherit: true).OfType<object>().ToArray();
+            var propertyModel = new PropertyModel(propertyInfo, attributes);
+            var bindingInfo = BindingInfo.GetBindingInfo(attributes);
+
+            propertyModel.BindingInfo = bindingInfo;
+            propertyModel.PropertyName = propertyInfo.Name;
+
+            return propertyModel;
+        }
     }
 }
