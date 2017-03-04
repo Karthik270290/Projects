@@ -16,7 +16,7 @@ namespace RazorPageExecutionInstrumentationWebSite
         public void ConfigureServices(IServiceCollection services)
         {
             // Normalize line endings to avoid changes in instrumentation locations between systems.
-            services.AddTransient<IRazorCompilationService, TestRazorCompilationService>();
+            // services.AddTransient<IRazorCompilationService, TestRazorCompilationService>();
 
             // Add MVC services to the services container.
             services.AddMvc();

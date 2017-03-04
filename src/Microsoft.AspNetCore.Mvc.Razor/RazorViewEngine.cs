@@ -489,6 +489,12 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             HashSet<IChangeToken> expirationTokens)
         {
             var viewStartPages = new List<ViewLocationCacheItem>();
+            Debug.Assert(!string.IsNullOrEmpty(path));
+            if (path[0] == '~')
+            {
+                path = path.Substring(1);
+            }
+
             foreach (var viewStartProjectItem in _razorProject.FindHierarchicalItems(path, ViewStartFileName))
             {
                 var result = _pageFactory.CreateFactory(viewStartProjectItem.Path);
