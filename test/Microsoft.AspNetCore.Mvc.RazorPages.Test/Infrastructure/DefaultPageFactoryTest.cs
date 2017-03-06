@@ -95,6 +95,33 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
         }
 
         [Fact]
+        public void PageFactorySetsPath()
+        {
+            // Arrange
+            var descriptor = new CompiledPageActionDescriptor
+            {
+                PageTypeInfo = typeof(ViewDataTestPage).GetTypeInfo(),
+                ModelTypeInfo = typeof(ViewDataTestPageModel).GetTypeInfo()
+            };
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Path = "/this/is/a/path";
+
+            var pageContext = new PageContext
+            {
+                HttpContext = httpContext
+            };
+            
+            // Act
+            var factory = CreatePageFactory().CreatePageFactory(descriptor);
+            var instance = factory(pageContext);
+
+            // Assert
+            var testPage = Assert.IsType<ViewDataTestPage>(instance);
+            Assert.Equal("/this/is/a/path", testPage.Path);
+        }
+
+        [Fact]
         public void PageFactorySetViewDataWithModelTypeWhenNotNull()
         {
             // Arrange
