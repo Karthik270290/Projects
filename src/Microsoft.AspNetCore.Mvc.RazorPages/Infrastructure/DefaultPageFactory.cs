@@ -57,11 +57,11 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
                 _modelMetadataProvider,
                 _propertyAccessors);
 
-            return (PageContext context) =>
+            return (context) =>
             {
                 var page = (Page)activatorFactory(context);
                 page.PageContext = context;
-                page.Path = context?.HttpContext?.Request.Path;
+                page.Path = context.ActionDescriptor.ViewEnginePath;
                 propertyActivator.Activate(page, context);
                 return page;
             };

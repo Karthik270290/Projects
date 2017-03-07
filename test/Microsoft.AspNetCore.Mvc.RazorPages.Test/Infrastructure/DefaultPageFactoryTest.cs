@@ -49,7 +49,10 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
             {
                 PageTypeInfo = typeof(TestPage).GetTypeInfo(),
             };
-            var pageContext = new PageContext();
+            var pageContext = new PageContext
+            {
+                ActionDescriptor = descriptor
+            };
             var factoryProvider = CreatePageFactory();
 
             // Act
@@ -103,13 +106,10 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
                 PageTypeInfo = typeof(ViewDataTestPage).GetTypeInfo(),
                 ModelTypeInfo = typeof(ViewDataTestPageModel).GetTypeInfo()
             };
+            descriptor.ViewEnginePath = "/this/is/a/path.cshtml";
 
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.Path = "/this/is/a/path";
-
-            var pageContext = new PageContext
-            {
-                HttpContext = httpContext
+            var pageContext = new PageContext {
+                ActionDescriptor = descriptor
             };
             
             // Act
@@ -118,7 +118,7 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
 
             // Assert
             var testPage = Assert.IsType<ViewDataTestPage>(instance);
-            Assert.Equal("/this/is/a/path", testPage.Path);
+            Assert.Equal("/this/is/a/path.cshtml", testPage.Path);
         }
 
         [Fact]

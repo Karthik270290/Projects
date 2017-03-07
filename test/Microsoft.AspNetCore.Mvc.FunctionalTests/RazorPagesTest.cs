@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
 
             // Assert
             var content = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Path: /PathSet", content.Trim());
+            Assert.Equal("Path: /PathSet.cshtml", content.Trim());
         }
 
         [Fact]
