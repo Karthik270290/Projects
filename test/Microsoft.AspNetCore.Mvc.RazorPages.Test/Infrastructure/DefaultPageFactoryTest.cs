@@ -108,7 +108,8 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
             };
             descriptor.ViewEnginePath = "/this/is/a/path.cshtml";
 
-            var pageContext = new PageContext {
+            var pageContext = new PageContext
+            {
                 ActionDescriptor = descriptor
             };
             
